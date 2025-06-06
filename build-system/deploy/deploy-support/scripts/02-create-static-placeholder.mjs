@@ -48,7 +48,7 @@ const VERBOSE = true; // Set to true to see detailed logs
 async function createVideoPlaceholders(buildDir = 'build/temp') {
     console.log("Creating video placeholders...");
 
-    // Fix: Use absolute path resolution that correctly includes danrtzaq directory
+    // Fix: Use absolute path resolution that correctly includes {{DEPLOY_USER}} directory
     const videosDir = path.resolve(process.cwd(), buildDir, 'public_html/assets/videos');
 
     console.log(`Searching for videos in: ${videosDir}`);

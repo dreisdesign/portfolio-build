@@ -37,7 +37,7 @@
         "design-portfolio",
         "modern-web"
     ],
-    "author": "Dan Reis <dan@danreisdesign.com>",
+    "author": "{{AUTHOR_NAME}} <{{AUTHOR_EMAIL}}>",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/dreisdesign/portfolio-build/issues"

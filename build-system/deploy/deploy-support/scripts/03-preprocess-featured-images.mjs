@@ -10,8 +10,8 @@ const __dirname = dirname(__filename);
 // Get the project root by traversing up from the script location
 // This ensures consistent paths regardless of where the script is run from
 function getProjectRoot() {
-    // This script is at: /Users/danielreis/web/danrtzaq/dev/scripts/deploy/deploy-support/scripts/
-    // Need to go up 6 levels to reach /Users/danielreis/web/
+    // This script is at: {{PROJECT_ROOT}}/dev/scripts/deploy/deploy-support/scripts/
+    // Need to go up 6 levels to reach the project root
     let currentDir = __dirname;
     for (let i = 0; i < 6; i++) {
         currentDir = path.dirname(currentDir);
@@ -21,7 +21,7 @@ function getProjectRoot() {
 
 const PROJECT_ROOT = getProjectRoot();
 // The source directory is directly in the web directory
-const SOURCE_DIR = path.join(PROJECT_ROOT, 'danrtzaq/public_html');
+const SOURCE_DIR = path.join(PROJECT_ROOT, '{{DEPLOY_USER}}/public_html');
 
 import sharp from 'sharp';
 

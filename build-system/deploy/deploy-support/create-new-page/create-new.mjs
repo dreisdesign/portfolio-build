@@ -2,7 +2,7 @@
 
 /**
  * create-new.mjs
- * A script to create new portfolio projects in the danrtzaq website.
+ * A script to create new portfolio projects in the {{DEPLOY_USER}} website.
  * 
  * Usage: node dev/scripts/deploy/deploy-support/create-new-page/create-new.mjs
  * 

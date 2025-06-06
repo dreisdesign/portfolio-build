@@ -11,7 +11,7 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}Browser Opening Test Utility${NC}"
 echo -e "${GREEN}=============================${NC}"
-echo -e "This script will attempt to open danreisdesign.com in your browser."
+echo -e "This script will attempt to open {{DEPLOY_HOST}} in your browser."
 echo -e "Use this to verify browser opening functionality for the deployment process."
 echo
 
@@ -24,7 +24,7 @@ echo -e "  • Operating System: ${BLUE}$OS${NC}"
 case "$OS" in
     "Darwin") # macOS
         echo -e "  • Detected macOS, using 'open' command"
-        open "https://danreisdesign.com"
+        open "https://{{DEPLOY_HOST}}"
         if [ $? -eq 0 ]; then
             echo -e "  ${GREEN}✓ Browser opened successfully${NC}"
         else
@@ -35,7 +35,7 @@ case "$OS" in
         echo -e "  • Detected Linux, checking available browser opener"
         if command -v xdg-open &> /dev/null; then
             echo -e "  • Using xdg-open command"
-            xdg-open "https://danreisdesign.com"
+            xdg-open "https://{{DEPLOY_HOST}}"
             if [ $? -eq 0 ]; then
                 echo -e "  ${GREEN}✓ Browser opened successfully${NC}"
             else
@@ -43,7 +43,7 @@ case "$OS" in
             fi
         elif command -v gnome-open &> /dev/null; then
             echo -e "  • Using gnome-open command"
-            gnome-open "https://danreisdesign.com"
+            gnome-open "https://{{DEPLOY_HOST}}"
             if [ $? -eq 0 ]; then
                 echo -e "  ${GREEN}✓ Browser opened successfully${NC}"
             else
@@ -51,12 +51,12 @@ case "$OS" in
             fi
         else
             echo -e "  ${RED}✗ Could not find a suitable browser opener command${NC}"
-            echo -e "    Please visit https://danreisdesign.com manually"
+            echo -e "    Please visit https://{{DEPLOY_HOST}} manually"
         fi
         ;;
     *)
         echo -e "  ${RED}✗ Unrecognized OS: $OS${NC}"
-        echo -e "    Please visit https://danreisdesign.com manually"
+        echo -e "    Please visit https://{{DEPLOY_HOST}} manually"
         ;;
 esac
 

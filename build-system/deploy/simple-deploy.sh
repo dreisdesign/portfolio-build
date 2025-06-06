@@ -1,16 +1,16 @@
 #!/bin/bash
-# filepath: /Users/danielreis/web/danrtzaq/dev/scripts/deploy/simple-deploy.sh
+# filepath: {{PROJECT_ROOT}}/dev/scripts/deploy/simple-deploy.sh
 
 # Ultra-simple deployment script that only deploys the build directory
 # Based directly on the working legacy script
 
 # Configuration
-REMOTE_USER="danrtzaq"
-REMOTE_HOST="danreisdesign.com"
-REMOTE_PORT="21098"
-BUILD_DIR="/Users/danielreis/web/danrtzaq/build/temp/public_html"
-REMOTE_PATH="/home/danrtzaq/public_html"
-SSH_KEY="$HOME/.ssh/id_rsa"
+REMOTE_USER="{{DEPLOY_USER}}"
+REMOTE_HOST="{{DEPLOY_HOST}}"
+REMOTE_PORT="{{DEPLOY_PORT}}"
+BUILD_DIR="{{PROJECT_ROOT}}/build/temp/public_html"
+REMOTE_PATH="{{DEPLOY_PATH}}"
+SSH_KEY="{{SSH_KEY_PATH}}"
 MAX_RETRIES=3
 OPEN_BROWSER=false # Default to not opening browser automatically
 
@@ -130,7 +130,7 @@ if [ "$DRY_RUN" != true ]; then
 
     # Clear cache (with retry)
     echo "Clearing cache..."
-    retry_command "ssh -p $REMOTE_PORT \"$REMOTE_USER@$REMOTE_HOST\" \"touch '$REMOTE_PATH/.htaccess'; [ -d /home/danrtzaq/tmp/cache ] && rm -rf /home/danrtzaq/tmp/cache/* || true\"" $MAX_RETRIES
+    retry_command "ssh -p $REMOTE_PORT \"$REMOTE_USER@$REMOTE_HOST\" \"touch '$REMOTE_PATH/.htaccess'; [ -d {{DEPLOY_PATH}}/tmp/cache ] && rm -rf {{DEPLOY_PATH}}/tmp/cache/* || true\"" $MAX_RETRIES
 else
     echo "DRY RUN MODE: Skipping permission setting and cache clearing"
 fi

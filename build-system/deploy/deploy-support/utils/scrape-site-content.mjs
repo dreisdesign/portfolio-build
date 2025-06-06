@@ -16,8 +16,8 @@ import { URL } from 'url';
 import { fileURLToPath } from 'url';
 
 // Configuration
-const BASE_URL = 'https://danreisdesign.com'; // Your actual domain
-const LOG_DIR = '/Users/danielreis/web/danrtzaq/dev/logs/production-scrape';
+const BASE_URL = 'https://{{DEPLOY_HOST}}'; // Your actual domain
+const LOG_DIR = '{{PROJECT_ROOT}}/dev/logs/production-scrape';
 // Get current date in YYYY-MM-DD-HH-MM-SS format for the filename
 const now = new Date();
 const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD format

@@ -616,7 +616,7 @@ async function updateCssVersions(dirPath, { recursive = true, verbose = false } 
 
 // Run validation and timestamp updates if this script is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-    const dirPath = process.argv[2] || './danrtzaq/public_html';
+    const dirPath = process.argv[2] || './{{DEPLOY_USER}}/public_html';
     const options = {
         recursive: !process.argv.includes('--no-recursive'),
         verbose: !process.argv.includes('--quiet')
