@@ -7,9 +7,10 @@
 set -e
 
 # Configuration
-PRIVATE_REPO="/Users/danielreis/web/danrtzaq"
+PRIVATE_REPO="/Users/danielreis/web/danrtzaq/build-system-repo"
 PUBLIC_REPO="/Users/danielreis/web/portfolio-build"
 SYNC_LOG="$PUBLIC_REPO/sync.log"
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 
 # Colors for output
 RED='\033[0;31m'

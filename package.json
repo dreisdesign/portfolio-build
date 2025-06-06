@@ -1,0 +1,72 @@
+{
+    "name": "portfolio-build-system",
+    "version": "1.0.0",
+    "description": "A comprehensive build system for professional portfolio websites with responsive image optimization, content validation, and deployment automation.",
+    "main": "build-system/deploy/build.mjs",
+    "type": "module",
+    "scripts": {
+        "build": "cd build-system && node deploy/build.mjs",
+        "build:dev": "cd build-system && NODE_ENV=development node deploy/build.mjs",
+        "build:validate": "cd build-system && node deploy/build.mjs --validate",
+        "dev": "cd build-system && npm run serve",
+        "serve": "cd build-system && node server/dev-server.mjs",
+        "deploy": "cd build-system && node deploy/build.mjs --deploy",
+        "validate": "cd build-system && node deploy/deploy-support/validation/validate.mjs",
+        "clean": "cd build-system && rm -rf build/temp/* && rm -rf public_html/assets/images/optimized/*",
+        "setup": "npm run install:deps && npm run setup:config",
+        "install:deps": "cd build-system && npm install",
+        "setup:config": "cp config/.env.example .env && echo 'Please edit .env with your configuration'",
+        "sync:pull": "git subtree pull --prefix=build-system {{PRIVATE_REPO_PATH}} main --squash",
+        "test": "cd build-system && npm test",
+        "lint": "cd build-system && npm run lint",
+        "format": "cd build-system && npm run format"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dreisdesign/portfolio-build.git"
+    },
+    "keywords": [
+        "portfolio",
+        "build-system",
+        "static-site-generator",
+        "responsive-images",
+        "web-development",
+        "deployment",
+        "optimization",
+        "ux-ui",
+        "design-portfolio",
+        "modern-web"
+    ],
+    "author": "Dan Reis <dan@danreisdesign.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/dreisdesign/portfolio-build/issues"
+    },
+    "homepage": "https://github.com/dreisdesign/portfolio-build#readme",
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0"
+    },
+    "dependencies": {
+        "sharp": "^0.32.0",
+        "fs-extra": "^11.0.0",
+        "chalk": "^5.0.0",
+        "ora": "^6.0.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.0"
+    },
+    "files": [
+        "build-system/",
+        "config/.env.example",
+        "docs/",
+        "example/",
+        "templates/",
+        "README.md"
+    ],
+    "private-repo-sync": {
+        "lastSync": "2025-06-06T10:30:00Z",
+        "privateRepoPath": "{{PRIVATE_REPO_PATH}}",
+        "syncVersion": "1.0.0"
+    }
+}

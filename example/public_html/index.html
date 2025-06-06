@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{AUTHOR_NAME}} - Portfolio</title>
+    <meta name="description" content="Portfolio of {{AUTHOR_NAME}} - UX/UI Designer and Developer">
+
+    <!-- Responsive Images -->
+    <link rel="preload" as="image" href="assets/images/hero-400.webp" media="(max-width: 400px)">
+    <link rel="preload" as="image" href="assets/images/hero-800.webp" media="(max-width: 800px)">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+    <header class="header">
+        <nav class="nav">
+            <h1 class="logo">{{AUTHOR_NAME}}</h1>
+            <ul class="nav-list">
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h2>UX/UI Designer & Developer</h2>
+            <p>Creating beautiful, functional digital experiences</p>
+
+            <!-- Responsive hero image -->
+            <picture>
+                <source srcset="assets/images/hero-400.webp" media="(max-width: 400px)" type="image/webp">
+                <source srcset="assets/images/hero-800.webp" media="(max-width: 800px)" type="image/webp">
+                <source srcset="assets/images/hero-1200.webp" media="(max-width: 1200px)" type="image/webp">
+                <img src="assets/images/hero-800.jpg" alt="Portfolio Hero Image" class="hero-image">
+            </picture>
+        </section>
+
+        <section id="portfolio" class="portfolio">
+            <h2>Featured Projects</h2>
+
+            <!-- Portfolio tags for filtering -->
+            <div class="portfolio-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="web-design">Web Design</button>
+                <button class="filter-btn" data-filter="branding">Branding</button>
+                <button class="filter-btn" data-filter="development">Development</button>
+            </div>
+
+            <div class="portfolio-grid">
+                <!-- Example project 1 -->
+                <article class="portfolio-item" data-tags="web-design,development">
+                    <div class="portfolio-image">
+                        <picture>
+                            <source srcset="assets/images/portfolio/project1-400.webp" media="(max-width: 400px)"
+                                type="image/webp">
+                            <source srcset="assets/images/portfolio/project1-800.webp" media="(max-width: 800px)"
+                                type="image/webp">
+                            <img src="assets/images/portfolio/project1-400.jpg" alt="E-commerce Website Design"
+                                loading="lazy">
+                        </picture>
+                    </div>
+                    <div class="portfolio-content">
+                        <h3>E-commerce Website</h3>
+                        <p>Modern e-commerce platform with focus on user experience and conversion optimization.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag" data-category="web-design">Web Design</span>
+                            <span class="tag" data-category="development">Development</span>
+                        </div>
+                        <a href="portfolio/ecommerce-website/" class="portfolio-link">View Project</a>
+                    </div>
+                </article>
+
+                <!-- Example project 2 -->
+                <article class="portfolio-item" data-tags="branding,web-design">
+                    <div class="portfolio-image">
+                        <picture>
+                            <source srcset="assets/images/portfolio/project2-400.webp" media="(max-width: 400px)"
+                                type="image/webp">
+                            <source srcset="assets/images/portfolio/project2-800.webp" media="(max-width: 800px)"
+                                type="image/webp">
+                            <img src="assets/images/portfolio/project2-400.jpg" alt="Brand Identity Design"
+                                loading="lazy">
+                        </picture>
+                    </div>
+                    <div class="portfolio-content">
+                        <h3>Brand Identity System</h3>
+                        <p>Complete brand identity including logo, guidelines, and digital applications.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag" data-category="branding">Branding</span>
+                            <span class="tag" data-category="web-design">Web Design</span>
+                        </div>
+                        <a href="portfolio/brand-identity/" class="portfolio-link">View Project</a>
+                    </div>
+                </article>
+
+                <!-- Example project 3 -->
+                <article class="portfolio-item" data-tags="development">
+                    <div class="portfolio-image">
+                        <picture>
+                            <source srcset="assets/images/portfolio/project3-400.webp" media="(max-width: 400px)"
+                                type="image/webp">
+                            <source srcset="assets/images/portfolio/project3-800.webp" media="(max-width: 800px)"
+                                type="image/webp">
+                            <img src="assets/images/portfolio/project3-400.jpg" alt="Web Application" loading="lazy">
+                        </picture>
+                    </div>
+                    <div class="portfolio-content">
+                        <h3>Web Application</h3>
+                        <p>Custom web application built with modern JavaScript frameworks and best practices.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag" data-category="development">Development</span>
+                        </div>
+                        <a href="portfolio/web-application/" class="portfolio-link">View Project</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section id="about" class="about">
+            <h2>About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>I'm a passionate UX/UI designer and developer with over {{YEARS_EXPERIENCE}} years of experience
+                        creating digital experiences that are both beautiful and functional.</p>
+                    <p>My expertise spans across web design, brand identity, and front-end development, with a focus on
+                        user-centered design principles and modern web technologies.</p>
+                </div>
+                <div class="about-image">
+                    <picture>
+                        <source srcset="assets/images/about-400.webp" media="(max-width: 400px)" type="image/webp">
+                        <source srcset="assets/images/about-800.webp" media="(max-width: 800px)" type="image/webp">
+                        <img src="assets/images/about-400.jpg" alt="{{AUTHOR_NAME}}" loading="lazy">
+                    </picture>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <h2>Get In Touch</h2>
+            <div class="contact-content">
+                <p>Interested in working together? Let's discuss your project.</p>
+                <div class="contact-links">
+                    <a href="mailto:{{AUTHOR_EMAIL}}" class="contact-link">Email</a>
+                    <a href="{{LINKEDIN_URL}}" class="contact-link" target="_blank" rel="noopener">LinkedIn</a>
+                    <a href="{{PORTFOLIO_URL}}" class="contact-link" target="_blank" rel="noopener">Portfolio</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 {{AUTHOR_NAME}}. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/portfolio-filter.js"></script>
+    <script src="js/lazy-loading.js"></script>
+</body>
+
+</html>
