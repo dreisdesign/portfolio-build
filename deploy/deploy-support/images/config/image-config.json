@@ -1,0 +1,44 @@
+{
+  "sizes": [
+    {
+      "width": 320,
+      "suffix": "-320w"
+    },
+    {
+      "width": 640,
+      "suffix": "-640w"
+    },
+    {
+      "width": 960,
+      "suffix": "-960w"
+    },
+    {
+      "width": 1200,
+      "suffix": "-1200w"
+    },
+    {
+      "width": 1800,
+      "suffix": "-1800w"
+    }
+  ],
+  "formats": ["webp", "png"],
+  "quality": {
+    "webp": 85,
+    "png": 90
+  },
+  "paths": {
+    "baseAssetPath": "/assets",
+    "outputStructure": "preserve"
+  },
+  "defaultSizesAttribute": "(max-width: 1200px) 100vw, 1200px",
+  "processingOptions": {
+    "skipExisting": false,
+    "preserveOriginal": true
+  },
+  "validation": {
+    "maxWidth": 1920,
+    "minWidth": 320,
+    "allowedFormats": ["png", "jpg", "jpeg", "webp"],
+    "maxFileSize": 5242880
+  }
+}

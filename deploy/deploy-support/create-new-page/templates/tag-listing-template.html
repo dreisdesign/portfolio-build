@@ -1,0 +1,32 @@
+<!-- Template for individual tag listing pages -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta name="description" content="Explore Dan Reis's UX design portfolio items tagged with {{TAG_NAME}}." />
+    <title>Product Design Portfolio | {{TAG_NAME}} | Dan Reis</title>
+    <!-- BUILD_INSERT id="head" -->
+    <link rel="stylesheet" href="/styles/page-portfolio.css?v={{VERSION}}" />
+</head>
+
+<body class="portfolio-index portfolio-tag-page">
+    <!-- HEADER SECTION: Navigation and Title -->
+    <div class="wrapper">
+        <!-- BUILD_INSERT id="nav" -->
+        <header role="banner">
+            <h1>{{TAG_CATEGORY}}: {{TAG_NAME}}</h1>
+            <a href="/portfolio/tags/" class="tag-index-link">All tags</a>
+        </header>
+    </div>
+    <!-- MAIN CONTENT -->
+    <main role="main" id="main-content">
+        <div class="wrapper">
+            <div class="cards staggered-animation">
+                <!-- Portfolio cards for this tag will be dynamically inserted here -->
+            </div>
+        </div>
+    </main>
+    <!-- BUILD_INSERT id="footer" -->
+</body>
+
+</html>
