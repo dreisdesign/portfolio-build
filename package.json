@@ -7,7 +7,9 @@
     "scripts": {
         "build": "cd build-system && node deploy/build.mjs",
         "build:dev": "cd build-system && NODE_ENV=development node deploy/build.mjs",
+        "build:swift": "cd build-system && node deploy/swift-build.mjs",
         "build:validate": "cd build-system && node deploy/build.mjs --validate",
+        "menu": "cd build-system && node menu.mjs",
         "dev": "cd build-system && npm run serve",
         "serve": "cd build-system && node server/dev-server.mjs",
         "deploy": "cd build-system && node deploy/build.mjs --deploy",
