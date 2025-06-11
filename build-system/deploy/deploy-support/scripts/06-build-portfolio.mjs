@@ -697,13 +697,23 @@ async function generatePortfolioIndexPage(portfolioData) {
         console.warn(`Missing responsive images for ${section.path}. Using base image as fallback.`);
       }
 
+      // Generate tags HTML (limit to 3 most relevant tags)
+      let tagsHtml = '';
+      if (section.tags && section.tags.length > 0) {
+        const displayTags = section.tags.slice(0, 3); // Limit to 3 tags for clean presentation
+        tagsHtml = `
+            <div class="card--tags">
+              ${displayTags.map(tag => `<span class="portfolio-tag">${tag.name}</span>`).join('')}
+            </div>`;
+      }
+
       return `
         <a class="card" href="${section.path}">
           <div class="card--details">
             <h2>${section.title}</h2>
             <div class="card--company-logo">
               <img src="/assets/images/portfolio/company-logo--${section.company}.svg" alt="${section.company} logo">
-            </div>
+            </div>${tagsHtml}
           </div>
           <picture>
             <source 
@@ -1374,7 +1384,7 @@ async function main(buildDir = './build/temp') {
     const files = fs.readdirSync(portfolioDir, { withFileTypes: true });
 
     for (const dirent of files) {
-      if (dirent.isDirectory()) {
+      if (dirent.isDirectory() && dirent.name !== 'tags') {
         const companyDir = path.join(portfolioDir, dirent.name);
         const projects = fs.readdirSync(companyDir, { withFileTypes: true });
 
