@@ -1458,11 +1458,26 @@ async function main(buildDir = './build/temp') {
  * @returns {Object} - Mapping of current project paths to next project data
  */
 function createNextProjectMap(portfolioData) {
+  // Sort portfolio data using the same logic as the portfolio index page
+  const sortedPortfolioData = [...portfolioData].sort((a, b) => {
+    // First sort by company (MikMak first, then LogMeIn, then DataXu)
+    const companyOrder = { 'mikmak': 0, 'logmein': 1, 'dataxu': 2 };
+    const aCompanyOrder = companyOrder[a.company.toLowerCase()] ?? 999;
+    const bCompanyOrder = companyOrder[b.company.toLowerCase()] ?? 999;
+
+    if (aCompanyOrder !== bCompanyOrder) {
+      return aCompanyOrder - bCompanyOrder;
+    }
+
+    // Within the same company, sort alphabetically by title
+    return a.title.localeCompare(b.title);
+  });
+
   const nextProjectMap = {};
 
-  for (let i = 0; i < portfolioData.length; i++) {
-    const currentProject = portfolioData[i];
-    const nextProject = portfolioData[(i + 1) % portfolioData.length]; // Wrap around to first project
+  for (let i = 0; i < sortedPortfolioData.length; i++) {
+    const currentProject = sortedPortfolioData[i];
+    const nextProject = sortedPortfolioData[(i + 1) % sortedPortfolioData.length]; // Wrap around to first project
 
     nextProjectMap[currentProject.path] = {
       title: nextProject.title,
