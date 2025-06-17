@@ -327,8 +327,7 @@ function parseTagText(tagText, filePath, category = 'Role') {
       .filter(tag => tag.length > 0) // Filter again after cleanup
       .map(tag => ({
         name: tag,
-        slug: createTagSlug(tag),
-        category: category
+        slug: createTagSlug(tag)
       }));
 
     if (processedTags.length === 0) {
@@ -461,7 +460,7 @@ function injectTagsIntoHtml(html, tags) {
             .replace(/^-|-$/g, '');
           return `<a href="/portfolio/tags/${slug}/" class="portfolio-tag">${tagName}</a>`;
         }
-      }).join(' ');
+      }).join(', ');
 
       updatedHtml = updatedHtml.replace(pattern, `$1${clickableTagsHtml}`);
     }
@@ -698,46 +697,13 @@ async function generatePortfolioIndexPage(portfolioData) {
         console.warn(`Missing responsive images for ${section.path}. Using base image as fallback.`);
       }
 
-      // Generate tags HTML (limit based on estimated line count for consistent heights)
-      let tagsHtml = '';
-      if (section.tags && section.tags.length > 0) {
-        // Estimate character width per line (adjust based on your card width and font size)
-        const avgCharsPerLine = 30; // Increased for smaller font size
-        const maxLines = 2; // Maximum lines of tags we want
-        const maxChars = avgCharsPerLine * maxLines;
-
-        const displayTags = [];
-        let currentChars = 0;
-
-        for (const tag of section.tags) {
-          const tagLength = tag.name.length + 2; // +2 for spacing/padding
-          if (currentChars + tagLength <= maxChars) {
-            displayTags.push(tag);
-            currentChars += tagLength;
-          } else {
-            break;
-          }
-        }
-
-        // Calculate remaining Role tags specifically for "more" indicator
-        const remainingRoleTags = section.tags.filter((tag, index) =>
-          index >= displayTags.length && tag.category === 'Role'
-        ).length;
-        const moreIndicator = remainingRoleTags > 0 ? `<span class="portfolio-tag portfolio-tag--more">+${remainingRoleTags} more</span>` : '';
-
-        tagsHtml = `
-            <div class="card--tags">
-              ${displayTags.map(tag => `<span class="portfolio-tag">${tag.name}</span>`).join('')}${moreIndicator}
-            </div>`;
-      }
-
       return `
         <a class="card" href="${section.path}">
           <div class="card--details">
             <h2>${section.title}</h2>
             <div class="card--company-logo">
               <img src="/assets/images/portfolio/company-logo--${section.company}.svg" alt="${section.company} logo">
-            </div>${tagsHtml}
+            </div>
           </div>
           <picture>
             <source 
@@ -847,39 +813,6 @@ async function generateNextProjectSections(nextProjectMap) {
           .map(size => `${nextProject.imageBase}-${size}w.png ${size}w`)
           .join(', ');
 
-        // Generate tags HTML for next project (same logic as main cards)
-        let nextProjectTagsHtml = '';
-        if (nextProject.tags && nextProject.tags.length > 0) {
-          // Estimate character width per line (adjust based on your card width and font size)
-          const avgCharsPerLine = 30; // Increased for smaller font size
-          const maxLines = 2; // Maximum lines of tags we want
-          const maxChars = avgCharsPerLine * maxLines;
-
-          const displayTags = [];
-          let currentChars = 0;
-
-          for (const tag of nextProject.tags) {
-            const tagLength = tag.name.length + 2; // +2 for spacing/padding
-            if (currentChars + tagLength <= maxChars) {
-              displayTags.push(tag);
-              currentChars += tagLength;
-            } else {
-              break;
-            }
-          }
-
-          // Calculate remaining Role tags specifically for "more" indicator
-          const remainingRoleTags = nextProject.tags.filter((tag, index) =>
-            index >= displayTags.length && tag.category === 'Role'
-          ).length;
-          const moreIndicator = remainingRoleTags > 0 ? `<span class="portfolio-tag portfolio-tag--more">+${remainingRoleTags} more</span>` : '';
-
-          nextProjectTagsHtml = `
-                <div class="card--tags">
-                  ${displayTags.map(tag => `<span class="portfolio-tag">${tag.name}</span>`).join('')}${moreIndicator}
-                </div>`;
-        }
-
         // Generate the next project card HTML
         const nextProjectHTML = `
           <div class="cards">
@@ -889,7 +822,7 @@ async function generateNextProjectSections(nextProjectMap) {
                 <h2>${nextProject.title}</h2>
                 <div class="card--company-logo">
                   <img src="/assets/images/portfolio/company-logo--${nextProject.company}.svg" alt="${nextProject.company} logo">
-                </div>${nextProjectTagsHtml}
+                </div>
               </div>
               <picture>
                 <source
@@ -1165,8 +1098,8 @@ async function generateTagPages(portfolioData) {
       template = `<!doctype html>
 <html lang="en">
 <head>
-  <meta name="description" content="Explore Dan Reis's UX design portfolio items tagged with {{TAG_NAME}}." />
-  <title>Product Design Portfolio | {{TAG_NAME}} | Dan Reis</title>
+  <meta name="description" content="Explore {{AUTHOR_NAME}}'s UX design portfolio items tagged with {{TAG_NAME}}." />
+  <title>Product Design Portfolio | {{TAG_NAME}} | {{AUTHOR_NAME}}</title>
   <!-- BUILD_INSERT id="head" -->
   <link rel="stylesheet" href="/styles/page-portfolio.css?v={{VERSION}}" />
 </head>
@@ -1224,46 +1157,13 @@ async function generateTagPages(portfolioData) {
           console.warn(`Missing responsive images for ${item.path}. Using base image as fallback.`);
         }
 
-        // Generate tags HTML (limit based on estimated line count for consistent heights)
-        let tagsHtml = '';
-        if (item.tags && item.tags.length > 0) {
-          // Estimate character width per line (adjust based on your card width and font size)
-          const avgCharsPerLine = 30; // Increased for smaller font size
-          const maxLines = 2; // Maximum lines of tags we want
-          const maxChars = avgCharsPerLine * maxLines;
-
-          const displayTags = [];
-          let currentChars = 0;
-
-          for (const tag of item.tags) {
-            const tagLength = tag.name.length + 2; // +2 for spacing/padding
-            if (currentChars + tagLength <= maxChars) {
-              displayTags.push(tag);
-              currentChars += tagLength;
-            } else {
-              break;
-            }
-          }
-
-          // Calculate remaining Role tags specifically for "more" indicator
-          const remainingRoleTags = item.tags.filter((tag, index) =>
-            index >= displayTags.length && tag.category === 'Role'
-          ).length;
-          const moreIndicator = remainingRoleTags > 0 ? `<span class="portfolio-tag portfolio-tag--more">+${remainingRoleTags} more</span>` : '';
-
-          tagsHtml = `
-            <div class="card--tags">
-              ${displayTags.map(tag => `<span class="portfolio-tag">${tag.name}</span>`).join('')}${moreIndicator}
-            </div>`;
-        }
-
         return `
         <a class="card" href="${item.path}">
           <div class="card--details">
             <h2>${item.title}</h2>
             <div class="card--company-logo">
               <img src="/assets/images/portfolio/company-logo--${item.company}.svg" alt="${item.company} logo">
-            </div>${tagsHtml}
+            </div>
           </div>
           <picture>
             <source 
@@ -1361,8 +1261,8 @@ async function generateTagIndexPage(portfolioData) {
 <html lang="en">
 
 <head>
-    <meta name="description" content="Browse Dan Reis's UX design portfolio by tags and skills including UX Design, Prototyping, User Research, and more." />
-    <title>Portfolio Tags & Skills | Dan Reis</title>
+    <meta name="description" content="Browse {{AUTHOR_NAME}}'s UX design portfolio by tags and skills including UX Design, Prototyping, User Research, and more." />
+    <title>Portfolio Tags & Skills | {{AUTHOR_NAME}}</title>
     <!-- BUILD_INSERT id="head" -->
     <link rel="stylesheet" href="/styles/page-portfolio.css?v={{VERSION}}" />
 </head>
@@ -1474,7 +1374,7 @@ async function main(buildDir = './build/temp') {
     const files = fs.readdirSync(portfolioDir, { withFileTypes: true });
 
     for (const dirent of files) {
-      if (dirent.isDirectory() && dirent.name !== 'tags') {
+      if (dirent.isDirectory()) {
         const companyDir = path.join(portfolioDir, dirent.name);
         const projects = fs.readdirSync(companyDir, { withFileTypes: true });
 
@@ -1548,33 +1448,17 @@ async function main(buildDir = './build/temp') {
  * @returns {Object} - Mapping of current project paths to next project data
  */
 function createNextProjectMap(portfolioData) {
-  // Sort portfolio data using the same logic as the portfolio index page
-  const sortedPortfolioData = [...portfolioData].sort((a, b) => {
-    // First sort by company (MikMak first, then LogMeIn, then DataXu)
-    const companyOrder = { 'mikmak': 0, 'logmein': 1, 'dataxu': 2 };
-    const aCompanyOrder = companyOrder[a.company.toLowerCase()] ?? 999;
-    const bCompanyOrder = companyOrder[b.company.toLowerCase()] ?? 999;
-
-    if (aCompanyOrder !== bCompanyOrder) {
-      return aCompanyOrder - bCompanyOrder;
-    }
-
-    // Within the same company, sort alphabetically by title
-    return a.title.localeCompare(b.title);
-  });
-
   const nextProjectMap = {};
 
-  for (let i = 0; i < sortedPortfolioData.length; i++) {
-    const currentProject = sortedPortfolioData[i];
-    const nextProject = sortedPortfolioData[(i + 1) % sortedPortfolioData.length]; // Wrap around to first project
+  for (let i = 0; i < portfolioData.length; i++) {
+    const currentProject = portfolioData[i];
+    const nextProject = portfolioData[(i + 1) % portfolioData.length]; // Wrap around to first project
 
     nextProjectMap[currentProject.path] = {
       title: nextProject.title,
       path: nextProject.path,
       imageBase: nextProject.imageBase,
-      company: nextProject.company,
-      tags: nextProject.tags
+      company: nextProject.company
     };
   }
 
