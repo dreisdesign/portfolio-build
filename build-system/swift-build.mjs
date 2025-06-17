@@ -6,11 +6,11 @@ import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const BUILD_DIR = path.join(__dirname, '../build/temp');
-const SCRIPTS_DIR = path.join(__dirname, 'deploy/deploy-support/scripts');
-const LOGS_DIR = path.join(__dirname, '../logs/build');
-const SOURCE_DIR = path.join(__dirname, '../example/public_html');
-const ASSETS_BACKUP_DIR = path.join(__dirname, '../build/swift-assets-backup');
+const BUILD_DIR = path.join(__dirname, '../../../build/temp');
+const SCRIPTS_DIR = path.join(__dirname, 'deploy-support/scripts');
+const LOGS_DIR = path.join(__dirname, '../../../dev/logs/build');
+const SOURCE_DIR = path.join(__dirname, '../../../public_html');
+const ASSETS_BACKUP_DIR = path.join(__dirname, '../../../build/swift-assets-backup');
 
 // Create timestamp for log file
 const timestamp = new Date().toISOString().replace(/[T:]/g, '-').slice(0, 19);
@@ -167,18 +167,61 @@ function restoreAssets() {
     if (fs.existsSync(backedUpAssetsDir)) {
         console.log('\n🔄 Restoring processed assets...');
 
-        // Remove the fresh assets directory that was copied from source
-        if (fs.existsSync(targetAssetsDir)) {
-            fs.rmSync(targetAssetsDir, { recursive: true, force: true });
-        }
-
-        // Copy the processed assets back
-        execSync(`cp -R "${backedUpAssetsDir}" "${targetAssetsDir}"`, { stdio: 'inherit' });
-        console.log('✓ Processed assets restored successfully');
+        // Smart restore: only overwrite files that are older than backup
+        restoreAssetsSelectively(backedUpAssetsDir, targetAssetsDir);
+        console.log('✓ Processed assets restored selectively');
         return true;
     } else {
         console.log('\n❌ No backed up assets found to restore');
         return false;
+    }
+}
+
+// Helper function to selectively restore assets without overwriting newer files
+function restoreAssetsSelectively(sourceDir, targetDir) {
+    if (!fs.existsSync(sourceDir)) return;
+
+    const items = fs.readdirSync(sourceDir);
+
+    for (const item of items) {
+        const sourcePath = path.join(sourceDir, item);
+        const targetPath = path.join(targetDir, item);
+        const stat = fs.statSync(sourcePath);
+
+        if (stat.isDirectory()) {
+            // Recursively handle subdirectories
+            if (!fs.existsSync(targetPath)) {
+                fs.mkdirSync(targetPath, { recursive: true });
+            }
+            restoreAssetsSelectively(sourcePath, targetPath);
+        } else if (stat.isFile()) {
+            // Skip -original files - they should always be regenerated from current source
+            if (item.includes('-original.')) {
+                return;
+            }
+
+            // Skip source images (files without size suffixes) - preserve current source files
+            const baseName = path.basename(item, path.extname(item));
+            if (!baseName.includes('-') || (!baseName.includes('w') && !baseName.includes('original'))) {
+                // This appears to be a source image (no size suffix), skip restoring it
+                return;
+            }
+
+            // Check if target exists and is newer than source
+            if (fs.existsSync(targetPath)) {
+                const sourceTime = fs.statSync(sourcePath).mtime.getTime();
+                const targetTime = fs.statSync(targetPath).mtime.getTime();
+
+                // Only restore if backup is newer than current (preserve recently processed files)
+                if (sourceTime > targetTime) {
+                    fs.copyFileSync(sourcePath, targetPath);
+                }
+                // Otherwise preserve the newer target file
+            } else {
+                // Target doesn't exist, restore from backup
+                fs.copyFileSync(sourcePath, targetPath);
+            }
+        }
     }
 }
 
@@ -221,31 +264,33 @@ async function swiftBuild() {
 
         await runBuildStep('deploy:copy', 'Copying source files to build directory');
 
-        // Step 3: Restore the processed assets (overwriting the source assets)
+        // Step 3: Restore processed assets (but preserve newer source images)
         const hasRestoredAssets = restoreAssets();
         if (!hasRestoredAssets) {
             throw new Error('Failed to restore processed assets');
         }
 
-        // Step 4: Process non-asset items (videos, featured images)
-        // Skip image processing but still do video placeholders and featured image processing
+        // Step 4: Process images with intelligent change detection (now has processed variants to compare against)
+        await runBuildStep('process:images', 'Processing images (smart change detection)');
+
+        // Step 5: Process non-asset items (videos, featured images)  
         await runBuildStep('process:videos', 'Creating video placeholders');
         await runBuildStep('process:featured', 'Processing featured images');
 
-        // Step 5: Generate responsive HTML (this uses existing processed assets)
-        await runBuildStep('process:responsive', 'Transforming responsive images (using existing processed assets)');
+        // Step 6: Generate responsive HTML (this uses processed assets)
+        await runBuildStep('process:responsive', 'Transforming responsive images');
 
-        // Step 6: Format files and validate
+        // Step 7: Format files and validate
         await runBuildStep('format:files', 'Formatting files and updating timestamps');
 
         if (!process.argv.includes('--skip-validation')) {
             await runBuildStep('validate:html', 'Validating HTML files');
         }
 
-        // Step 7: Build portfolio
+        // Step 8: Build portfolio
         await runBuildStep('build:portfolio', 'Building portfolio structure');
 
-        // Step 8: Re-inject head content into newly generated tag pages
+        // Step 9: Re-inject head content into newly generated tag pages
         console.log('\n🔄 Re-injecting head content into newly generated pages...');
         const headInjectPath = path.join(__dirname, 'deploy-support/head-templates/inject-head.mjs');
         const { spawn } = await import('child_process');
@@ -264,14 +309,14 @@ async function swiftBuild() {
             process.on('error', reject);
         });
 
-        // Step 9: Inject navigation and footer
+        // Step 10: Inject navigation and footer
         await runBuildStep('inject:nav', 'Injecting navigation into all HTML files');
         await runBuildStep('inject:footer', 'Injecting footer into all HTML files');
 
-        // Step 10: Run site audit
+        // Step 11: Run site audit
         await runBuildStep('audit:site', 'Running site audit to check images and videos');
 
-        // Step 11: Run site audit comparison
+        // Step 12: Run site audit comparison
         console.log('\n📊 Comparing with previous site audits...');
         try {
             const { spawn } = await import('child_process');
@@ -300,7 +345,7 @@ async function swiftBuild() {
             console.warn('⚠️ Failed to run site audit comparison:', error.message);
         }
 
-        // Step 12: Format HTML as the last step
+        // Step 13: Format HTML as the last step
         await formatHtmlFiles();
 
         console.log(`\n✅ SWIFT BUILD COMPLETED SUCCESSFULLY: ${new Date().toLocaleString()}`);
