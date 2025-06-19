@@ -10,6 +10,13 @@ import * as cheerio from 'cheerio';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Tag Category Configuration - Single source of truth for display labels
+const TAG_CATEGORIES = {
+  TagCategory1: "My Role:",
+  TagCategory2: "Industry & Platform:",
+  TagCategory3: "Approach & Deliverables:"
+};
+
 // Adding validation functions that were previously in validate.mjs
 /**
  * Validates HTML structure for portfolio pages
@@ -197,13 +204,15 @@ function checkNextProjectStructure(html, filePath) {
  */
 function parseAllTagsFromHtml(html, filePath) {
   try {
+    console.log(`\n🔍 Parsing tags from: ${filePath}`);
     const allTags = [];
 
     // Check if tags are already converted to clickable tags
-    const clickableTagsPattern = /<strong>(Role|Platform|Audience):<\/strong>\s*<a[^>]*class="portfolio-tag"/i;
+    const clickableTagsPattern = /<strong>(TagCategory1|TagCategory2|TagCategory3):<\/strong>\s*<a[^>]*class="portfolio-tag"/i;
     const clickableMatch = html.match(clickableTagsPattern);
 
     if (clickableMatch) {
+      console.log(`  ✓ Found clickable tags, extracting existing tags...`);
       // Tags are already converted - extract existing tags from all categories
       const allTagsPattern = /<a[^>]*class="portfolio-tag"[^>]*>([^<]+)<\/a>/g;
       let match;
@@ -219,33 +228,44 @@ function parseAllTagsFromHtml(html, filePath) {
       }
 
       if (allTags.length > 0) {
-        console.log(`Found ${allTags.length} existing clickable tags in ${filePath}`);
+        console.log(`  ✓ Found ${allTags.length} existing clickable tags in ${filePath}`);
         return allTags;
       }
     }
 
-    // Parse Role tags
-    const rolePattern = /<strong>Role:<\/strong>\s*([\s\S]*?)(?=<\/p>|<div|<br|$)/i;
-    const roleMatch = html.match(rolePattern);
-    if (roleMatch) {
-      const roleTags = parseTagText(roleMatch[1].trim(), filePath, 'Role');
-      allTags.push(...roleTags);
+    console.log(`  ✓ Parsing raw tag categories...`);
+
+    // Parse TagCategory1 tags (My Role)
+    const tagCategory1Pattern = /<strong>TagCategory1:<\/strong>\s*([\s\S]*?)(?=<\/p>|<div|<br|$)/i;
+    const tagCategory1Match = html.match(tagCategory1Pattern);
+    if (tagCategory1Match) {
+      console.log(`  ✓ Found TagCategory1: ${tagCategory1Match[1].trim()}`);
+      const category1Tags = parseTagText(tagCategory1Match[1].trim(), filePath, 'TagCategory1');
+      allTags.push(...category1Tags);
+    } else {
+      console.log(`  ⚠️ No TagCategory1 found`);
     }
 
-    // Parse Platform tags  
-    const platformPattern = /<strong>Platform:<\/strong>\s*([\s\S]*?)(?=<\/p>|<div|<br|$)/i;
-    const platformMatch = html.match(platformPattern);
-    if (platformMatch) {
-      const platformTags = parseTagText(platformMatch[1].trim(), filePath, 'Platform');
-      allTags.push(...platformTags);
+    // Parse TagCategory2 tags (Industry & Platform)
+    const tagCategory2Pattern = /<strong>TagCategory2:<\/strong>\s*([\s\S]*?)(?=<\/p>|<div|<br|$)/i;
+    const tagCategory2Match = html.match(tagCategory2Pattern);
+    if (tagCategory2Match) {
+      console.log(`  ✓ Found TagCategory2: ${tagCategory2Match[1].trim()}`);
+      const category2Tags = parseTagText(tagCategory2Match[1].trim(), filePath, 'TagCategory2');
+      allTags.push(...category2Tags);
+    } else {
+      console.log(`  ⚠️ No TagCategory2 found`);
     }
 
-    // Parse Audience tags
-    const audiencePattern = /<strong>Audience:<\/strong>\s*([\s\S]*?)(?=<\/p>|<div|<br|$)/i;
-    const audienceMatch = html.match(audiencePattern);
-    if (audienceMatch) {
-      const audienceTags = parseTagText(audienceMatch[1].trim(), filePath, 'Audience');
-      allTags.push(...audienceTags);
+    // Parse TagCategory3 tags (Approach & Deliverables)
+    const tagCategory3Pattern = /<strong>TagCategory3:<\/strong>\s*([\s\S]*?)(?=<\/p>|<div|<br|$)/i;
+    const tagCategory3Match = html.match(tagCategory3Pattern);
+    if (tagCategory3Match) {
+      console.log(`  ✓ Found TagCategory3: ${tagCategory3Match[1].trim()}`);
+      const category3Tags = parseTagText(tagCategory3Match[1].trim(), filePath, 'TagCategory3');
+      allTags.push(...category3Tags);
+    } else {
+      console.log(`  ⚠️ No TagCategory3 found`);
     }
 
     // Extract company name from file path and add as tag
@@ -256,7 +276,8 @@ function parseAllTagsFromHtml(html, filePath) {
       const formattedCompany = companyName.charAt(0).toUpperCase() + companyName.slice(1);
       allTags.push({
         name: formattedCompany,
-        slug: createTagSlug(formattedCompany)
+        slug: createTagSlug(formattedCompany),
+        category: 'Company'
       });
     }
 
@@ -327,7 +348,8 @@ function parseTagText(tagText, filePath, category = 'Role') {
       .filter(tag => tag.length > 0) // Filter again after cleanup
       .map(tag => ({
         name: tag,
-        slug: createTagSlug(tag)
+        slug: createTagSlug(tag),
+        category: category
       }));
 
     if (processedTags.length === 0) {
@@ -356,56 +378,7 @@ function createTagSlug(tagName) {
 }
 
 /**
- * Determines the category of a tag based on predefined lists
- * @param {string} tagName - The tag name to categorize
- * @returns {string} - The category: 'Role', 'Platform', 'Audience', 'Company', or 'Other'
- */
-function getTagCategory(tagName) {
-  const normalizedTag = tagName.toLowerCase();
-
-  // Role tags - professional responsibilities and activities
-  const roleTags = [
-    'ux design', 'ui design', 'visual design', 'design systems',
-    'interaction design & prototyping', 'prototyping', 'wireframing',
-    'user research', 'usability testing', 'research',
-    'information architecture', 'product design lead',
-    'product management', 'design strategy', 'product strategy',
-    'development', 'front-end development', 'component design',
-    'e-commerce', 'accessibility', 'brand design'
-  ];
-
-  // Platform tags - technical platforms and device types
-  const platformTags = [
-    'webapp', 'mobile', 'desktop', 'responsive',
-    'ios', 'android', 'web', 'native'
-  ];
-
-  // Audience tags - target market and business model
-  const audienceTags = [
-    'b2b', 'b2c', 'b2b saas', 'enterprise', 'consumer',
-    'internal tool', 'internal', 'startup'
-  ];
-
-  // Company tags - known company names
-  const companyTags = [
-    'dataxu', 'mikmak', 'logmein', 'swaven'
-  ];
-
-  if (roleTags.includes(normalizedTag)) {
-    return 'Role';
-  } else if (platformTags.includes(normalizedTag)) {
-    return 'Platform';
-  } else if (audienceTags.includes(normalizedTag)) {
-    return 'Audience';
-  } else if (companyTags.includes(normalizedTag)) {
-    return 'Company';
-  } else {
-    return 'Role';
-  }
-}
-
-/**
- * Injects clickable tags into portfolio HTML for all categories (Role, Platform, Audience)
+ * Injects clickable tags into portfolio HTML for all categories (TagCategory1, TagCategory2, TagCategory3)
  * @param {string} html - HTML content
  * @param {Array} tags - Array of tag objects
  * @returns {string} - HTML with tags injected
@@ -416,11 +389,11 @@ function injectTagsIntoHtml(html, tags) {
   }
 
   // Check if ALL tag categories are already injected (all should have clickable tags)
-  const hasRoleClickableTags = /<strong>Role:<\/strong>\s*<a[^>]*class="portfolio-tag"/.test(html);
-  const hasPlatformClickableTags = /<strong>Platform:<\/strong>\s*<a[^>]*class="portfolio-tag"/.test(html);
-  const hasAudienceClickableTags = /<strong>Audience:<\/strong>\s*<a[^>]*class="portfolio-tag"/.test(html);
+  const hasTagCategory1ClickableTags = new RegExp(`<strong>${TAG_CATEGORIES.TagCategory1.replace(':', '\\:')}</strong>\\s*<a[^>]*class="portfolio-tag"`, 'i').test(html);
+  const hasTagCategory2ClickableTags = new RegExp(`<strong>${TAG_CATEGORIES.TagCategory2.replace(':', '\\:').replace('&', '\\&')}</strong>\\s*<a[^>]*class="portfolio-tag"`, 'i').test(html);
+  const hasTagCategory3ClickableTags = new RegExp(`<strong>${TAG_CATEGORIES.TagCategory3.replace(':', '\\:').replace('&', '\\&')}</strong>\\s*<a[^>]*class="portfolio-tag"`, 'i').test(html);
 
-  if (hasRoleClickableTags && hasPlatformClickableTags && hasAudienceClickableTags) {
+  if (hasTagCategory1ClickableTags && hasTagCategory2ClickableTags && hasTagCategory3ClickableTags) {
     // All tags already injected, no need to re-inject
     return html;
   }
@@ -460,23 +433,49 @@ function injectTagsIntoHtml(html, tags) {
             .replace(/^-|-$/g, '');
           return `<a href="/portfolio/tags/${slug}/" class="portfolio-tag">${tagName}</a>`;
         }
-      }).join(', ');
+      }).join(' ');
 
       updatedHtml = updatedHtml.replace(pattern, `$1${clickableTagsHtml}`);
     }
   };
 
   // Process each category
-  replaceCategoryTags('Role');
-  replaceCategoryTags('Platform');
-  replaceCategoryTags('Audience');
+  replaceCategoryTags('TagCategory1');
+  replaceCategoryTags('TagCategory2');
+  replaceCategoryTags('TagCategory3');
+
+  // Replace generic category labels with display labels
+  updatedHtml = updatedHtml
+    .replace(/<strong>TagCategory1:<\/strong>/g, `<strong>${TAG_CATEGORIES.TagCategory1}</strong>`)
+    .replace(/<strong>TagCategory2:<\/strong>/g, `<strong>${TAG_CATEGORIES.TagCategory2}</strong>`)
+    .replace(/<strong>TagCategory3:<\/strong>/g, `<strong>${TAG_CATEGORIES.TagCategory3}</strong>`);
 
   // Reduce spacing between tag categories by changing structure
   // Convert multiple paragraph structure to single paragraph with line breaks
-  updatedHtml = updatedHtml.replace(
-    /(<strong>Role:<\/strong>[^<]*(?:<a[^>]*>[^<]*<\/a>[^<]*)*)<\/p>\s*<p>(<strong>Platform:<\/strong>[^<]*(?:<a[^>]*>[^<]*<\/a>[^<]*)*)<\/p>\s*<p>(<strong>Audience:<\/strong>[^<]*(?:<a[^>]*>[^<]*<\/a>[^<]*)*)/g,
-    '$1<br />$2<br />$3'
-  );
+  // Look for all three tag categories in sequence, allowing for other HTML elements in between
+  const tagCategory1Pattern = new RegExp(`(<p[^>]*>\\s*<strong>${TAG_CATEGORIES.TagCategory1.replace(':', '\\:')}[\\s\\S]*?<\\/p>)`, 'i');
+  const tagCategory2Pattern = new RegExp(`(<p[^>]*>\\s*<strong>${TAG_CATEGORIES.TagCategory2.replace(':', '\\:').replace('&', '\\&')}[\\s\\S]*?<\\/p>)`, 'i');
+  const tagCategory3Pattern = new RegExp(`(<p[^>]*>\\s*<strong>${TAG_CATEGORIES.TagCategory3.replace(':', '\\:').replace('&', '\\&')}[\\s\\S]*?<\\/p>)`, 'i');
+
+  const tagCategory1Match = updatedHtml.match(tagCategory1Pattern);
+  const tagCategory2Match = updatedHtml.match(tagCategory2Pattern);
+  const tagCategory3Match = updatedHtml.match(tagCategory3Pattern);
+
+  if (tagCategory1Match && tagCategory2Match && tagCategory3Match) {
+    // Extract the content without the <p> tags
+    const tagCategory1Content = tagCategory1Match[1].replace(/<\/?p[^>]*>/g, '');
+    const tagCategory2Content = tagCategory2Match[1].replace(/<\/?p[^>]*>/g, '');
+    const tagCategory3Content = tagCategory3Match[1].replace(/<\/?p[^>]*>/g, '');
+
+    // Create consolidated content
+    const consolidatedContent = `<p>${tagCategory1Content}<br />${tagCategory2Content}<br />${tagCategory3Content}</p>`;
+
+    // Replace all three separate paragraphs with the consolidated one
+    updatedHtml = updatedHtml
+      .replace(tagCategory1Pattern, consolidatedContent)
+      .replace(tagCategory2Pattern, '')
+      .replace(tagCategory3Pattern, '');
+  }
 
   return updatedHtml;
 }
@@ -507,15 +506,15 @@ function validatePortfolioPage(html, filePath) {
 }
 
 // Extract metadata from HTML file
-function extractMetadata(html, filePath) {
+function extractMetadata(html, filePath, skipValidation = false) {
   // Skip the portfolio root index.html
   if (filePath.endsWith('/portfolio/index.html')) {
     return null;
   }
 
   try {
-    // Validate structure first
-    if (!validatePortfolioPage(html, filePath)) {
+    // Validate structure first (skip if requested)
+    if (!skipValidation && !validatePortfolioPage(html, filePath)) {
       console.error('Failed validation:', filePath);
       return null;
     }
@@ -697,13 +696,20 @@ async function generatePortfolioIndexPage(portfolioData) {
         console.warn(`Missing responsive images for ${section.path}. Using base image as fallback.`);
       }
 
-      // Generate tags HTML (limit to 3 most relevant tags)
+      // Generate tags HTML (show up to 5 tags from all categories in order)
       let tagsHtml = '';
       if (section.tags && section.tags.length > 0) {
-        const displayTags = section.tags.slice(0, 3); // Limit to 3 tags for clean presentation
+        // Sort tags by category order: TagCategory1, TagCategory2, TagCategory3
+        const categoryOrder = { TagCategory1: 1, TagCategory2: 2, TagCategory3: 3 };
+        const orderedTags = section.tags.slice().sort((a, b) => {
+          return (categoryOrder[a.category] || 99) - (categoryOrder[b.category] || 99);
+        });
+        const displayTags = orderedTags.slice(0, 5);
+        const moreCount = orderedTags.length > 5 ? orderedTags.length - 5 : 0;
+        const moreIndicator = moreCount > 0 ? `<span class="portfolio-tag portfolio-tag--more">+${moreCount} more</span>` : '';
         tagsHtml = `
             <div class="card--tags">
-              ${displayTags.map(tag => `<span class="portfolio-tag">${tag.name}</span>`).join('')}
+              ${displayTags.map(tag => `<span class="portfolio-tag">${tag.name}</span>`).join('')}${moreIndicator}
             </div>`;
       }
 
@@ -716,18 +722,18 @@ async function generatePortfolioIndexPage(portfolioData) {
             </div>${tagsHtml}
           </div>
           <picture>
-            <source 
-              srcset="${section.imageBase}-320w.webp 320w, ${section.imageBase}-640w.webp 640w, ${section.imageBase}-960w.webp 960w, ${section.imageBase}-1200w.webp 1200w, ${section.imageBase}-1800w.webp 1800w" 
-              type="image/webp" 
+            <source
+              srcset="${section.imageBase}-320w.webp 320w, ${section.imageBase}-640w.webp 640w, ${section.imageBase}-960w.webp 960w, ${section.imageBase}-1200w.webp 1200w, ${section.imageBase}-1800w.webp 1800w"
+              type="image/webp"
             />
-            <img 
-              src="${section.imageBase}.png" 
-              alt="${section.description || ''}" 
-              width="1200" 
-              height="648" 
-              loading="lazy" 
+            <img
+              src="${section.imageBase}.png"
+              alt="${section.description || ''}"
+              width="1200"
+              height="648"
+              loading="lazy"
               srcset="${section.imageBase}-320w.png 320w, ${section.imageBase}-640w.png 640w, ${section.imageBase}-960w.png 960w, ${section.imageBase}-1200w.png 1200w, ${section.imageBase}-1800w.png 1800w"
-              sizes="(max-width: 1200px) 100vw, 1200px" 
+              sizes="(max-width: 1200px) 100vw, 1200px"
             />
           </picture>
         </a>
@@ -823,6 +829,37 @@ async function generateNextProjectSections(nextProjectMap) {
           .map(size => `${nextProject.imageBase}-${size}w.png ${size}w`)
           .join(', ');
 
+        // Generate tags HTML for next project (same logic as main cards)
+        let nextProjectTagsHtml = '';
+        if (nextProject.tags && nextProject.tags.length > 0) {
+          // Estimate character width per line (adjust based on your card width and font size)
+          const avgCharsPerLine = 30; // Increased for smaller font size
+          const maxLines = 2; // Maximum lines of tags we want
+          const maxChars = avgCharsPerLine * maxLines;
+
+          const displayTags = [];
+          let currentChars = 0;
+
+          for (const tag of nextProject.tags) {
+            const tagLength = tag.name.length + 2; // +2 for spacing/padding
+            if (currentChars + tagLength <= maxChars) {
+              displayTags.push(tag);
+              currentChars += tagLength;
+            } else {
+              break;
+            }
+          }
+
+          // Calculate remaining tags specifically for "more" indicator
+          const moreCount = nextProject.tags.length > displayTags.length ? nextProject.tags.length - displayTags.length : 0;
+          const moreIndicator = moreCount > 0 ? `<span class="portfolio-tag portfolio-tag--more">+${moreCount} more</span>` : '';
+
+          nextProjectTagsHtml = `
+                <div class="card--tags">
+                  ${displayTags.map(tag => `<span class="portfolio-tag">${tag.name}</span>`).join('')}${moreIndicator}
+                </div>`;
+        }
+
         // Generate the next project card HTML
         const nextProjectHTML = `
           <div class="cards">
@@ -832,7 +869,7 @@ async function generateNextProjectSections(nextProjectMap) {
                 <h2>${nextProject.title}</h2>
                 <div class="card--company-logo">
                   <img src="/assets/images/portfolio/company-logo--${nextProject.company}.svg" alt="${nextProject.company} logo">
-                </div>
+                </div>${nextProjectTagsHtml}
               </div>
               <picture>
                 <source
@@ -1167,27 +1204,58 @@ async function generateTagPages(portfolioData) {
           console.warn(`Missing responsive images for ${item.path}. Using base image as fallback.`);
         }
 
+        // Generate tags HTML (limit based on estimated line count for consistent heights)
+        let tagsHtml = '';
+        if (item.tags && item.tags.length > 0) {
+          // Estimate character width per line (adjust based on your card width and font size)
+          const avgCharsPerLine = 30; // Increased for smaller font size
+          const maxLines = 2; // Maximum lines of tags we want
+          const maxChars = avgCharsPerLine * maxLines;
+
+          const displayTags = [];
+          let currentChars = 0;
+
+          for (const tag of item.tags) {
+            const tagLength = tag.name.length + 2; // +2 for spacing/padding
+            if (currentChars + tagLength <= maxChars) {
+              displayTags.push(tag);
+              currentChars += tagLength;
+            } else {
+              break;
+            }
+          }
+
+          // Calculate remaining tags specifically for "more" indicator
+          const moreCount = item.tags.length > displayTags.length ? item.tags.length - displayTags.length : 0;
+          const moreIndicator = moreCount > 0 ? `<span class="portfolio-tag portfolio-tag--more">+${moreCount} more</span>` : '';
+
+          tagsHtml = `
+            <div class="card--tags">
+              ${displayTags.map(tag => `<span class="portfolio-tag">${tag.name}</span>`).join('')}${moreIndicator}
+            </div>`;
+        }
+
         return `
         <a class="card" href="${item.path}">
           <div class="card--details">
             <h2>${item.title}</h2>
             <div class="card--company-logo">
               <img src="/assets/images/portfolio/company-logo--${item.company}.svg" alt="${item.company} logo">
-            </div>
+            </div>${tagsHtml}
           </div>
           <picture>
-            <source 
-              srcset="${item.imageBase}-320w.webp 320w, ${item.imageBase}-640w.webp 640w, ${item.imageBase}-960w.webp 960w, ${item.imageBase}-1200w.webp 1200w, ${item.imageBase}-1800w.webp 1800w" 
-              type="image/webp" 
+            <source
+              srcset="${item.imageBase}-320w.webp 320w, ${item.imageBase}-640w.webp 640w, ${item.imageBase}-960w.webp 960w, ${item.imageBase}-1200w.webp 1200w, ${item.imageBase}-1800w.webp 1800w"
+              type="image/webp"
             />
-            <img 
-              src="${item.imageBase}.png" 
-              alt="${item.description || ''}" 
-              width="1200" 
-              height="648" 
-              loading="lazy" 
+            <img
+              src="${item.imageBase}.png"
+              alt="${item.description || ''}"
+              width="1200"
+              height="648"
+              loading="lazy"
               srcset="${item.imageBase}-320w.png 320w, ${item.imageBase}-640w.png 640w, ${item.imageBase}-960w.png 960w, ${item.imageBase}-1200w.png 1200w, ${item.imageBase}-1800w.png 1800w"
-              sizes="(max-width: 1200px) 100vw, 1200px" 
+              sizes="(max-width: 1200px) 100vw, 1200px"
             />
           </picture>
         </a>
@@ -1195,11 +1263,12 @@ async function generateTagPages(portfolioData) {
       }));
 
       // Replace template placeholders
-      const tagCategory = getTagCategory(tagData.name);
+      const tagCategory = tagData.category || 'TagCategory1'; // Use the tag's existing category
+      const displayCategory = TAG_CATEGORIES[tagCategory] || tagCategory; // Fallback to category if not found
       let tagPageHtml = template
         .replace(/{{TAG_NAME}}/g, tagData.name)
-        .replace(/{{TAG_CATEGORY}}/g, tagCategory)
-        .replace(/                <!-- Portfolio cards for this tag will be dynamically inserted here -->/, cardsHtml.join('\n                '));
+        .replace(/{{TAG_CATEGORY}}/g, displayCategory)
+        .replace(/          <!-- Portfolio cards for this tag will be dynamically inserted here -->/, cardsHtml.join('\n          '));
 
       // Write the tag page
       const tagPagePath = path.join(tagDir, 'index.html');
@@ -1238,7 +1307,7 @@ async function generateTagIndexPage(portfolioData) {
             tagMap.set(tag.slug, {
               name: tag.name,
               slug: tag.slug,
-              category: getTagCategory(tag.name),
+              category: tag.category || 'TagCategory1', // Use the tag's existing category
               count: 0
             });
           }
@@ -1249,10 +1318,10 @@ async function generateTagIndexPage(portfolioData) {
 
     // Group tags by category and sort alphabetically within each category
     const tagsByCategory = {
-      'Role': [],
-      'Platform': [],
-      'Audience': [],
-      'Company': []
+      TagCategory1: [],
+      TagCategory2: [],
+      TagCategory3: [],
+      Company: []
     };
 
     Array.from(tagMap.values()).forEach(tag => {
@@ -1300,35 +1369,32 @@ async function generateTagIndexPage(portfolioData) {
     ).join('\n                        ')}
                     </ul>
                 </section>
-                
-                <!-- SECTION: Audience Tags -->
+
+                <!-- SECTION: TagCategory1 Tags -->
                 <section class="solution">
-                    <h2>Audience Tags</h2>
-                    <p>Target market and business model categories.</p>
+                    <h2>${TAG_CATEGORIES.TagCategory1}</h2>
                     <ul class="tag-list">
-                        ${tagsByCategory.Audience.map(tag =>
+                        ${tagsByCategory.TagCategory1.map(tag =>
       `<li><a href="/portfolio/tags/${tag.slug}/">${tag.name}</a> <span class="tag-count">(${tag.count} project${tag.count !== 1 ? 's' : ''})</span></li>`
     ).join('\n                        ')}
                     </ul>
                 </section>
-                
-                <!-- SECTION: Platform Tags -->
+
+                <!-- SECTION: TagCategory2 Tags -->
                 <section class="solution">
-                    <h2>Platform Tags</h2>
-                    <p>Technical platforms and device types targeted by projects.</p>
+                    <h2>${TAG_CATEGORIES.TagCategory2}</h2>
                     <ul class="tag-list">
-                        ${tagsByCategory.Platform.map(tag =>
+                        ${tagsByCategory.TagCategory2.map(tag =>
       `<li><a href="/portfolio/tags/${tag.slug}/">${tag.name}</a> <span class="tag-count">(${tag.count} project${tag.count !== 1 ? 's' : ''})</span></li>`
     ).join('\n                        ')}
                     </ul>
                 </section>
-                
-                <!-- SECTION: Role Tags -->
+
+                <!-- SECTION: TagCategory3 Tags -->
                 <section class="solution">
-                    <h2>Role Tags</h2>
-                    <p>Professional responsibilities and activities on projects.</p>
+                    <h2>${TAG_CATEGORIES.TagCategory3}</h2>
                     <ul class="tag-list">
-                        ${tagsByCategory.Role.map(tag =>
+                        ${tagsByCategory.TagCategory3.map(tag =>
       `<li><a href="/portfolio/tags/${tag.slug}/">${tag.name}</a> <span class="tag-count">(${tag.count} project${tag.count !== 1 ? 's' : ''})</span></li>`
     ).join('\n                        ')}
                     </ul>
@@ -1376,30 +1442,52 @@ async function main(buildDir = './build/temp') {
       process.exit(1);
     }
 
-    console.log('✓ Portfolio directory found');
-
-    // Step 1: Collect and validate portfolio data
+    console.log('✓ Portfolio directory found');    // Step 1: Collect and validate portfolio data
     console.log('\n1. 📊 Collecting portfolio data...');
     const portfolioData = [];
-    const files = fs.readdirSync(portfolioDir, { withFileTypes: true });
+
+    const sourcePortfolioDir = './public_html/portfolio';
+    const files = fs.readdirSync(sourcePortfolioDir, { withFileTypes: true });
 
     for (const dirent of files) {
       if (dirent.isDirectory() && dirent.name !== 'tags') {
-        const companyDir = path.join(portfolioDir, dirent.name);
-        const projects = fs.readdirSync(companyDir, { withFileTypes: true });
+        const sourceCompanyDir = path.join(sourcePortfolioDir, dirent.name);
+        const projects = fs.readdirSync(sourceCompanyDir, { withFileTypes: true });
 
         for (const projectDirent of projects) {
           if (projectDirent.isDirectory()) {
-            const indexPath = path.join(companyDir, projectDirent.name, 'index.html');
-            if (fs.existsSync(indexPath)) {
+            const sourceIndexPath = path.join(sourceCompanyDir, projectDirent.name, 'index.html');
+
+            if (fs.existsSync(sourceIndexPath)) {
               try {
-                const html = await fs.promises.readFile(indexPath, 'utf8');
-                const metadata = extractMetadata(html, indexPath);
-                if (metadata) {
+                const html = await fs.promises.readFile(sourceIndexPath, 'utf8');
+                // Extract tags from source HTML
+                const tags = parseAllTagsFromHtml(html, sourceIndexPath);
+
+                // Build metadata manually for data collection
+                const relativePath = `/portfolio/${dirent.name}/${projectDirent.name}/`;
+
+                // Extract basic metadata from HTML
+                const h1Match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+                const descMatch = html.match(/<meta\s+name="description"\s+content="([^"]+)"/);
+
+                if (h1Match && descMatch) {
+                  const title = h1Match[1].replace(/<[^>]+>/g, '').trim();
+                  const description = descMatch[1].trim();
+
+                  const metadata = {
+                    path: relativePath,
+                    title: title,
+                    description: description,
+                    company: dirent.name.toLowerCase(),
+                    imageBase: `/assets/images/portfolio/${dirent.name}/${projectDirent.name}/featured--cover`,
+                    tags: tags
+                  };
+
                   portfolioData.push(metadata);
                 }
               } catch (error) {
-                console.warn(`Error processing ${indexPath}:`, error.message);
+                console.warn(`Error processing ${sourceIndexPath}:`, error.message);
               }
             }
           }
@@ -1408,6 +1496,10 @@ async function main(buildDir = './build/temp') {
     }
 
     console.log(`✓ Collected metadata for ${portfolioData.length} portfolio projects`);
+
+    // Write portfolio data (including tags) to JSON for downstream use
+    await fs.promises.writeFile(OUTPUT_FILE, JSON.stringify(portfolioData, null, 2), 'utf8');
+    console.log(`✓ Wrote portfolio data with tags to ${OUTPUT_FILE}`);
 
     // Step 2: Transform carousel markup
     console.log('\n2. 🎠 Transforming carousel markup...');
@@ -1483,7 +1575,8 @@ function createNextProjectMap(portfolioData) {
       title: nextProject.title,
       path: nextProject.path,
       imageBase: nextProject.imageBase,
-      company: nextProject.company
+      company: nextProject.company,
+      tags: nextProject.tags
     };
   }
 

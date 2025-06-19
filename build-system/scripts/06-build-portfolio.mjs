@@ -276,7 +276,8 @@ function parseAllTagsFromHtml(html, filePath) {
       const formattedCompany = companyName.charAt(0).toUpperCase() + companyName.slice(1);
       allTags.push({
         name: formattedCompany,
-        slug: createTagSlug(formattedCompany)
+        slug: createTagSlug(formattedCompany),
+        category: 'Company'
       });
     }
 
@@ -374,59 +375,6 @@ function createTagSlug(tagName) {
     .replace(/\s+/g, '-') // Replace spaces with hyphens
     .replace(/-+/g, '-') // Replace multiple hyphens with single
     .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
-}
-
-/**
- * Determines the category of a tag based on predefined lists
- * @param {string} tagName - The tag name to categorize
- * @returns {string} - The category: 'TagCategory1', 'TagCategory2', 'TagCategory3', 'Company', or 'TagCategory1'
- */
-function getTagCategory(tagName) {
-  const normalizedTag = tagName.toLowerCase();
-
-  // TagCategory1 tags (My Role) - professional responsibilities and activities
-  const tagCategory1Tags = [
-    'ux design', 'ui design', 'visual design', 'design systems',
-    'interaction design & prototyping', 'prototyping', 'wireframing',
-    'user research', 'usability testing', 'research',
-    'information architecture', 'product design lead',
-    'product management', 'design strategy', 'product strategy',
-    'development', 'front-end development', 'component design',
-    'e-commerce', 'accessibility', 'brand design'
-  ];
-
-  // TagCategory2 tags (Industry & Platform) - technical platforms, device types, and business context
-  const tagCategory2Tags = [
-    'webapp', 'mobile', 'desktop', 'responsive',
-    'ios', 'android', 'web', 'native',
-    'b2b', 'b2c', 'b2b saas', 'enterprise', 'consumer',
-    'internal tool', 'internal', 'startup'
-  ];
-
-  // TagCategory3 tags (Approach & Deliverables) - methodologies and outputs
-  const tagCategory3Tags = [
-    'data visualization', 'end-to-end design', 'technical documentation',
-    'vqa', 'platform integration', 'interactive prototyping',
-    'user testing', 'user journey mapping', 'content strategy',
-    'front-end development'
-  ];
-
-  // Company tags - known company names
-  const companyTags = [
-    'dataxu', 'mikmak', 'logmein', 'swaven'
-  ];
-
-  if (tagCategory1Tags.includes(normalizedTag)) {
-    return 'TagCategory1';
-  } else if (tagCategory2Tags.includes(normalizedTag)) {
-    return 'TagCategory2';
-  } else if (tagCategory3Tags.includes(normalizedTag)) {
-    return 'TagCategory3';
-  } else if (companyTags.includes(normalizedTag)) {
-    return 'Company';
-  } else {
-    return 'TagCategory1';
-  }
 }
 
 /**
@@ -1315,7 +1263,7 @@ async function generateTagPages(portfolioData) {
       }));
 
       // Replace template placeholders
-      const tagCategory = getTagCategory(tagData.name);
+      const tagCategory = tagData.category || 'TagCategory1'; // Use the tag's existing category
       const displayCategory = TAG_CATEGORIES[tagCategory] || tagCategory; // Fallback to category if not found
       let tagPageHtml = template
         .replace(/{{TAG_NAME}}/g, tagData.name)
@@ -1359,7 +1307,7 @@ async function generateTagIndexPage(portfolioData) {
             tagMap.set(tag.slug, {
               name: tag.name,
               slug: tag.slug,
-              category: getTagCategory(tag.name),
+              category: tag.category || 'TagCategory1', // Use the tag's existing category
               count: 0
             });
           }
