@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const BUILD_DIR = path.resolve('build/temp/public_html');
-const FOOTER_HTML = `\n    <!-- FOOTER -->\n    <div class="wrapper">\n        <footer class="footer" role="contentinfo">\n            <p>\n                <b><a href="https://github.com/dreisdesign/portfolio-build" target="_blank" rel="noopener noreferrer">Designed and Developed</a></b>\n            </p>\n        </footer>\n    </div>\n`;
+const FOOTER_HTML = `\n    <!-- FOOTER -->\n    <div class="wrapper">\n        <footer class="footer" role="contentinfo">\n            <p>\n                <b><a href="https://github.com/dreisdesign/portfolio-build?tab=readme-ov-file#portfolio-build-system" target="_blank" rel="noopener noreferrer">Designed and Developed</a></b>\n            </p>\n        </footer>\n    </div>\n`;
 
 function injectFooter(html) {
     // Only inject if the build insert comment is present
