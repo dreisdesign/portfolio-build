@@ -2,36 +2,36 @@
 <!doctype html>
 <html lang="en">
 
-<head>
+  <head>
     <meta name="description" content="Explore Dan Reis's UX design portfolio items tagged with {{TAG_NAME}}." />
     <title>Product Design Portfolio | {{TAG_NAME}} | Dan Reis</title>
     <!-- BUILD_INSERT id="head" -->
     <link rel="stylesheet" href="/styles/page-portfolio.css?v={{VERSION}}" />
-</head>
+  </head>
 
-<body class="portfolio-index portfolio-tag-page">
+  <body class="portfolio-index portfolio-tag-page">
     <!-- HEADER SECTION: Navigation and Title -->
     <div class="wrapper">
-        <!-- BUILD_INSERT id="nav" -->
-        <header role="banner">
-            <div class="tag-page-header">
-                <span class="subheadline--large">{{TAG_CATEGORY}}:</span>
-                <h1>{{TAG_NAME}}</h1>
-                <div class="all-tags-link">
-                    <a href="/portfolio/tags/">All Tags</a>
-                </div>
-            </div>
-        </header>
+      <!-- BUILD_INSERT id="nav" -->
+      <header role="banner">
+        <div class="tag-page-header">
+          <span class="subheadline--large">{{TAG_CATEGORY}}</span>
+          <h1>{{TAG_NAME}}</h1>
+          <div class="all-tags-link">
+            <a href="/portfolio/tags/">All Tags</a>
+          </div>
+        </div>
+      </header>
     </div>
     <!-- MAIN CONTENT -->
     <main role="main" id="main-content">
-        <div class="wrapper">
-            <div class="cards staggered-animation">
-                <!-- Portfolio cards for this tag will be dynamically inserted here -->
-            </div>
+      <div class="wrapper">
+        <div class="cards staggered-animation">
+          <!-- Portfolio cards for this tag will be dynamically inserted here -->
         </div>
+      </div>
     </main>
     <!-- BUILD_INSERT id="footer" -->
-</body>
+  </body>
 
 </html>
