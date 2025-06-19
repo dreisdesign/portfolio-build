@@ -1,37 +1,180 @@
 # Portfolio Build System
 
-A comprehensive, modern build system specifically designed for UX/UI portfolio websites.
+> **Note**: This documentation and build system have been developed with AI assistance as part of a modern collaborative development workflow. The codebase represents real-world production tooling enhanced through human-AI collaboration.
 
-## Features
+A comprehensive, modern build system specifically designed for UX/UI portfolio websites. Built for performance, reliability, and ease of use.
 
+## ✨ Latest Updates (v1.4.0)
+
+- **🚀 Tag Page Generation Fixed** - All portfolio tag pages now display correctly with proper content
+- **🔧 Template & Build Script Improvements** - Resolved double colon issues and template matching
+- **📊 Enhanced Portfolio Data** - Complete tag data integration across all 32 tag pages
+- **⚡ Validated Performance** - 99%+ build time savings with intelligent image change detection
+
+## 🎯 Features
+
+### Core Build System
 - **Intelligent Build System** - Smart image change detection with 99%+ performance gains
-- **Comprehensive Build Pipeline** - Validation, optimized image processing, portfolio indexing
-- **Portfolio-Specific Features** - Three-category tagging system, project organization
-- **Modern Tooling** - ES modules, responsive image generation, automated deployment
-- **Professional Quality** - Production-tested with robust validation and efficiency
+- **Comprehensive Build Pipeline** - HTML validation, optimized image processing, portfolio indexing
+- **Swift Build Mode** - Ultra-fast builds with git-based change detection (~18 seconds)
+- **Self-Healing Image Processing** - Automatically fixes missing responsive variants
 
-## Quick Start
+### Portfolio-Specific Features
+- **Three-Category Tagging System** - Role, Platform, and Audience categorization
+- **Automatic Tag Page Generation** - 32 browseable tag pages with portfolio cards
+- **Portfolio Project Organization** - Structured company/project hierarchy
+- **"Up Next" Sequential Ordering** - Smart project navigation
+- **Responsive Image Optimization** - WebP/AVIF support with multiple breakpoints
 
-1. Clone this repository
-2. Install dependencies: `npm install`
-3. Copy your portfolio content to `example/public_html/`
-4. Run build: `npm run build`
-5. Preview: `npm run preview`
+### Modern Tooling & Quality
+- **ES Modules** - Modern JavaScript throughout the build system
+- **Automated Deployment** - Scripts with retry logic and environment setup
+- **Development Servers** - BrowserSync integration and static file serving
+- **Code Quality** - ESLint, Prettier, and EditorConfig integration
+- **Professional Validation** - Production-tested with 54+ pages, 1,700+ images
 
-## Documentation
+## 🚀 Quick Start
 
-- [Setup Guide](docs/SETUP.md)
-- [Build Pipeline](docs/BUILD-PIPELINE.md)
-- [Portfolio Structure](docs/PORTFOLIO-STRUCTURE.md)
-- [Configuration](docs/CONFIGURATION.md)
+1. **Clone this repository**
+   ```bash
+   git clone https://github.com/dreisdesign/portfolio-build.git
+   cd portfolio-build
+   ```
 
-## Target Audience
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- UX/UI designers building portfolios
-- Developers creating portfolio sites
-- Agencies needing portfolio templates
-- Anyone wanting a robust static site generator
+3. **Set up your portfolio content**
+   - Copy your portfolio content to `example/public_html/`
+   - Follow the portfolio structure in `docs/PORTFOLIO-STRUCTURE.md`
 
-## License
+4. **Configure your build**
+   - Copy `config/package.json.example` to your project root as `package.json`
+   - Update configuration placeholders (see `docs/CONFIGURATION.md`)
 
-MIT License - See LICENSE file for details
+5. **Run your first build**
+   ```bash
+   npm run build          # Full build (~45 seconds with audit)
+   npm run build:swift    # Swift build (~18 seconds, recommended)
+   ```
+
+6. **Preview your site**
+   ```bash
+   npm run preview        # Static file server
+   npm run dev           # Development server with live reload
+   ```
+
+## 📊 Performance Benchmarks
+
+- **Swift Build (Fast)**: ~18 seconds (git-based image detection + skip audit)
+- **Swift Build (Full)**: ~45 seconds (git-based image detection + audit)
+- **Complete Build**: ~3 minutes (processes all 1,800+ responsive image variants)
+- **Image Detection**: <1 second when no images changed
+- **Typical Development**: 99%+ faster builds with intelligent change detection
+
+## 📚 Documentation
+
+- [**Setup Guide**](docs/SETUP.md) - Complete installation and configuration
+- [**Build Pipeline**](docs/BUILD-PIPELINE.md) - How the build system works
+- [**Portfolio Structure**](docs/PORTFOLIO-STRUCTURE.md) - Organizing your portfolio content
+- [**Configuration**](docs/CONFIGURATION.md) - Customizing the build system
+
+## 🎨 Portfolio Features
+
+### Tag System
+- **Three Categories**: Role (UX Designer, Developer), Platform (Web, Mobile), Audience (Enterprise, Consumer)
+- **Automatic Generation**: 32 tag pages created automatically from portfolio metadata
+- **Smart Categorization**: Organized by logical hierarchy (Company → Audience → Platform → Role)
+- **Consistent Styling**: Unified design across homepage, tag pages, and project pages
+
+### Project Organization
+- **Company/Project Structure**: `portfolio/company/project/index.html`
+- **Responsive Images**: Multiple formats (WebP, PNG) and breakpoints (320px-1800px)
+- **Interactive Content**: Video support with WebP poster generation
+- **SEO Optimized**: Proper meta tags, structured data, and performance optimization
+
+## 🛠️ Build Commands
+
+```bash
+# Development
+npm run dev              # Start development server with live reload
+npm run preview          # Static file server for testing builds
+
+# Building
+npm run build            # Complete build with all features
+npm run build:swift      # Fast build with git-based change detection
+npm run build:swift:fast # Ultra-fast build (skips site audit)
+
+# Utilities
+npm run validate         # HTML validation only
+npm run process-images   # Image processing only
+npm run menu            # Interactive build menu
+```
+
+## 🔧 Advanced Features
+
+### Swift Build System
+- **Git-Based Detection**: Only processes changed files since last commit
+- **Self-Healing**: Automatically restores missing responsive image variants
+- **Selective Processing**: Smart decisions on what needs rebuilding
+- **Debug Output**: Clear feedback on what's being processed and why
+
+### Image Processing
+- **Intelligent Change Detection**: Compares source modification times
+- **Multi-Format Output**: WebP, AVIF, PNG with fallbacks
+- **Responsive Breakpoints**: 320px, 640px, 768px, 1024px, 1366px, 1800px
+- **Quality Optimization**: Balanced file size and visual quality
+- **Sharpening Enhancement**: Subtle sharpening for improved clarity
+
+### Deployment
+- **Automated Scripts**: Production deployment with retry logic
+- **Environment Setup**: Configurable paths, hosts, and credentials
+- **Asset Optimization**: Minification, compression, and caching headers
+- **Rollback Support**: Safe deployment with backup capabilities
+
+## 🎯 Who This Is For
+
+- **UX/UI Designers** - Building professional portfolio websites
+- **Front-End Developers** - Creating high-performance portfolio sites
+- **Design Agencies** - Needing robust portfolio templates and workflows
+- **Students & Professionals** - Anyone wanting a modern, optimized portfolio build system
+
+## 🌟 Production Ready
+
+This build system is actively used in production and has processed:
+- **54+ Portfolio Pages** - Real-world testing with comprehensive content
+- **1,700+ Images** - Extensive responsive image optimization
+- **25+ Videos** - Interactive video content with optimized posters
+- **17,915+ Words** - Rich content across projects and documentation
+
+## 📈 Recent Improvements
+
+### v1.4.0 (June 2025)
+- **Fixed Critical Tag Page Generation Bug** - All 32 tag pages now display portfolio cards correctly
+- **Enhanced Template Processing** - Resolved double colon issues and improved card insertion
+- **Improved Build Script Reliability** - Better error handling and path resolution
+- **Validated Complete Tag System** - Confirmed all portfolio categorization working properly
+
+### v1.3.0 (June 2025)
+- **Revolutionary Performance** - 99%+ build time savings with intelligent change detection
+- **Swift Build Mode** - Ultra-fast development workflow with git-based optimization
+- **Self-Healing Image Processing** - Automatically fixes missing responsive variants
+
+## 🤝 Contributing
+
+We welcome contributions! This build system is open source and designed for the community.
+
+- **Report Issues** - Found a bug? Let us know!
+- **Feature Requests** - Have an idea? We'd love to hear it!
+- **Pull Requests** - Code contributions are welcome
+- **Documentation** - Help improve our guides and examples
+
+## 📄 License
+
+MIT License - See LICENSE file for details.
+
+---
+
+**Built with ❤️ for the design community**
