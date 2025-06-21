@@ -7,6 +7,52 @@ All notable changes to the Portfolio Build System will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-01-07 - Complete Layout & Cross-Browser Improvements Sync
+
+### Added
+- **Comprehensive Layout System Updates**: Synced complete layout consistency and spacing improvements
+  - Refactored wrapper container architecture for full-width backgrounds with centered content
+  - Implemented semantic spacing system using rem units for better accessibility
+  - Added Safari-specific CSS fixes for card sizing and layout issues
+  - Enhanced footer responsiveness with improved mobile behavior
+- **Advanced Build Pipeline Features**: Updated build scripts with latest improvements
+  - Git-based image processing with smart change detection
+  - Company logo injection system with automatic detection
+  - Enhanced portfolio tagging and categorization
+  - Improved cross-browser compatibility handling
+- **Modern CSS Architecture**: Complete CSS system overhaul
+  - Standardized content spacing with margin-based approach
+  - Removed conflicting width rules and simplified container responsibilities
+  - Added proper spacing rules for all content elements
+  - Improved maintainability and code organization
+
+### Changed
+- **Build System Architecture**: Updated all core build scripts to latest versions
+  - Enhanced image processing with git-based change detection
+  - Improved HTML validation and processing pipeline
+  - Updated head templates with company logo injection
+  - Streamlined utility scripts and audit functionality
+- **Development Tools**: Refreshed development servers and configuration
+  - Updated multi-server setup for better development workflow
+  - Enhanced package.json configuration with latest dependencies
+  - Improved ESLint, Prettier, and EditorConfig integration
+
+### Fixed
+- **Cross-Browser Compatibility**: Resolved Safari and iOS rendering issues
+  - Fixed Safari "Up Next" card sizing problems on initial page load
+  - Resolved persistent iOS Safari footer link color issues
+  - Added Safari-specific transforms and layout fixes
+- **Layout Consistency**: Achieved perfect alignment across all sections
+  - Eliminated width inconsistencies between Summary and content sections
+  - Fixed responsive behavior across all screen sizes
+  - Improved touch interface optimization for mobile devices
+
+### Technical Details
+- **Private Repository Sync**: Updated sync script to use correct source paths
+- **Sanitization**: All sensitive information properly replaced with placeholder variables
+- **Version Management**: Automated sync metadata tracking for better maintenance
+- **22 Files Updated**: Comprehensive update including all build scripts, utilities, and configuration
+
 ## [1.4.0] - 2025-06-19
 
 ### Fixed
