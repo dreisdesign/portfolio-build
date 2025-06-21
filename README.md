@@ -1,15 +1,28 @@
 # Portfolio Build System
 
-> **Note**: This documentation and build system have been developed with AI assistance as part of a modern collaborative development workflow. The codebase represents real-world production tooling enhanced through human-AI collaboration.
+> **Note**: This documentation and build system have been developed with AI assistance as part of a modern### Image Processing
+- **Intelligent Change Detection** - Git-based detection of modified images for faster builds
+- **Multi-Format Output** - WebP, AVIF, PNG with automatic fallbacks
+- **Responsive Breakpoints** - 320px, 640px, 768px, 1024px, 1366px, 1800px optimized variants
+- **Quality Optimization** - Balanced file size and visual quality across all formats
+- **Sharpening Enhancement** - Subtle sharpening for improved clarity and visual appeal
+
+### Layout & Styling
+- **Full-Width Container System** - Modern wrapper architecture for consistent, professional layouts
+- **Semantic Spacing** - rem-based spacing system for accessibility and better scaling
+- **Cross-Browser Fixes** - Safari-specific CSS for consistent rendering across all browsers
+- **Responsive Grid System** - Adaptive layouts for portfolio browsing and tag pages
+- **Mobile Optimization** - Touch-optimized interfaces and enhanced small-screen behaviorborative development workflow. The codebase represents real-world production tooling enhanced through human-AI collaboration.
 
 A comprehensive, modern build system specifically designed for UX/UI portfolio websites. Built for performance, reliability, and ease of use.
 
-## ✨ Latest Updates (v1.4.0)
+## ✨ Latest Updates (v1.5.0)
 
-- **🚀 Tag Page Generation Fixed** - All portfolio tag pages now display correctly with proper content
-- **🔧 Template & Build Script Improvements** - Resolved double colon issues and template matching
-- **📊 Enhanced Portfolio Data** - Complete tag data integration across all 32 tag pages
-- **⚡ Validated Performance** - 99%+ build time savings with intelligent image change detection
+- **🎨 Complete Layout System Overhaul** - Perfect consistency across all portfolio pages with full-width backgrounds and centered content
+- **🌐 Cross-Browser Compatibility** - Safari and iOS-specific fixes for consistent rendering across all devices
+- **♿ Enhanced Accessibility** - Semantic spacing with rem units and improved responsive behavior for better user experience
+- **🏗️ Modern CSS Architecture** - Refactored wrapper containers, eliminated conflicting rules, and improved maintainability
+- **📱 Advanced Responsive Design** - Specialized homepage layout, enhanced footer behavior, and optimized touch interfaces
 
 ## 🎯 Features
 
@@ -18,6 +31,7 @@ A comprehensive, modern build system specifically designed for UX/UI portfolio w
 - **Comprehensive Build Pipeline** - HTML validation, optimized image processing, portfolio indexing
 - **Swift Build Mode** - Ultra-fast builds with git-based change detection (~18 seconds)
 - **Self-Healing Image Processing** - Automatically fixes missing responsive variants
+- **Company Logo Injection** - Automated logo detection and insertion based on project structure
 
 ### Portfolio-Specific Features
 - **Three-Category Tagging System** - Role, Platform, and Audience categorization
@@ -25,6 +39,13 @@ A comprehensive, modern build system specifically designed for UX/UI portfolio w
 - **Portfolio Project Organization** - Structured company/project hierarchy
 - **"Up Next" Sequential Ordering** - Smart project navigation
 - **Responsive Image Optimization** - WebP/AVIF support with multiple breakpoints
+
+### Layout & Design System
+- **Full-Width Background Containers** - Modern wrapper architecture for consistent layouts
+- **Semantic Spacing System** - rem-based spacing for accessibility and scalability
+- **Cross-Browser Compatibility** - Safari and iOS-specific fixes for consistent rendering
+- **Responsive Grid System** - Adaptive layouts for tag pages and portfolio browsing
+- **Enhanced Mobile Experience** - Touch-optimized interfaces and improved small-screen behavior
 
 ### Modern Tooling & Quality
 - **ES Modules** - Modern JavaScript throughout the build system
@@ -150,6 +171,14 @@ This build system is actively used in production and has processed:
 - **17,915+ Words** - Rich content across projects and documentation
 
 ## 📈 Recent Improvements
+
+### v1.5.0 (January 2025)
+- **🎨 Complete Layout System Overhaul** - Refactored wrapper containers for full-width backgrounds with centered content
+- **🌐 Cross-Browser Compatibility** - Fixed Safari "Up Next" card sizing and iOS footer link color issues
+- **♿ Enhanced Accessibility** - Converted spacing to rem units and improved responsive behavior
+- **🏗️ Modern CSS Architecture** - Eliminated conflicting width rules and simplified container responsibilities
+- **📱 Advanced Responsive Design** - Specialized homepage layout and enhanced footer responsiveness
+- **🔧 Build System Updates** - Company logo injection, git-based image processing, and enhanced portfolio features
 
 ### v1.4.0 (June 2025)
 - **Fixed Critical Tag Page Generation Bug** - All 32 tag pages now display portfolio cards correctly
