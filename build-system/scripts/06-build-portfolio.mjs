@@ -12,9 +12,9 @@ const __dirname = dirname(__filename);
 
 // Tag Category Configuration - Single source of truth for display labels
 const TAG_CATEGORIES = {
-  TagCategory1: "My Role:",
-  TagCategory2: "Industry & Platform:",
-  TagCategory3: "Approach & Deliverables:"
+  TagCategory1: "My Role",
+  TagCategory2: "Industry & Platform",
+  TagCategory3: "Approach & Deliverables"
 };
 
 // Adding validation functions that were previously in validate.mjs
@@ -271,12 +271,12 @@ function parseAllTagsFromHtml(html, filePath) {
     // Extract company name from file path and add as tag
     const companyMatch = filePath.match(/portfolio\/([^\/]+)\//);
     if (companyMatch) {
-      const companyName = companyMatch[1];
-      // Convert company name to proper case
-      const formattedCompany = companyName.charAt(0).toUpperCase() + companyName.slice(1);
+      const companySlug = companyMatch[1];
+      // Use consistent company name mapping
+      const companyName = COMPANY_NAME_MAP[companySlug] || companySlug.charAt(0).toUpperCase() + companySlug.slice(1);
       allTags.push({
-        name: formattedCompany,
-        slug: createTagSlug(formattedCompany),
+        name: companyName,
+        slug: createTagSlug(companyName),
         category: 'Company'
       });
     }
@@ -832,26 +832,13 @@ async function generateNextProjectSections(nextProjectMap) {
         // Generate tags HTML for next project (same logic as main cards)
         let nextProjectTagsHtml = '';
         if (nextProject.tags && nextProject.tags.length > 0) {
-          // Estimate character width per line (adjust based on your card width and font size)
-          const avgCharsPerLine = 30; // Increased for smaller font size
-          const maxLines = 2; // Maximum lines of tags we want
-          const maxChars = avgCharsPerLine * maxLines;
-
-          const displayTags = [];
-          let currentChars = 0;
-
-          for (const tag of nextProject.tags) {
-            const tagLength = tag.name.length + 2; // +2 for spacing/padding
-            if (currentChars + tagLength <= maxChars) {
-              displayTags.push(tag);
-              currentChars += tagLength;
-            } else {
-              break;
-            }
-          }
-
-          // Calculate remaining tags specifically for "more" indicator
-          const moreCount = nextProject.tags.length > displayTags.length ? nextProject.tags.length - displayTags.length : 0;
+          // Sort tags by category order: TagCategory1, TagCategory2, TagCategory3
+          const categoryOrder = { TagCategory1: 1, TagCategory2: 2, TagCategory3: 3 };
+          const orderedTags = nextProject.tags.slice().sort((a, b) => {
+            return (categoryOrder[a.category] || 99) - (categoryOrder[b.category] || 99);
+          });
+          const displayTags = orderedTags.slice(0, 5);
+          const moreCount = orderedTags.length > 5 ? orderedTags.length - 5 : 0;
           const moreIndicator = moreCount > 0 ? `<span class="portfolio-tag portfolio-tag--more">+${moreCount} more</span>` : '';
 
           nextProjectTagsHtml = `
@@ -1125,6 +1112,7 @@ async function generateTagPages(portfolioData) {
             tagMap.set(tag.slug, {
               name: tag.name,
               slug: tag.slug,
+              category: tag.category,
               items: []
             });
           }
@@ -1145,8 +1133,8 @@ async function generateTagPages(portfolioData) {
       template = `<!doctype html>
 <html lang="en">
 <head>
-  <meta name="description" content="Explore Dan Reis's UX design portfolio items tagged with {{TAG_NAME}}." />
-  <title>Product Design Portfolio | {{TAG_NAME}} | Dan Reis</title>
+  <meta name="description" content="Explore {{AUTHOR_NAME}}'s UX design portfolio items tagged with {{TAG_NAME}}." />
+  <title>Product Design Portfolio | {{TAG_NAME}} | {{AUTHOR_NAME}}</title>
   <!-- BUILD_INSERT id="head" -->
   <link rel="stylesheet" href="/styles/page-portfolio.css?v={{VERSION}}" />
 </head>
@@ -1204,29 +1192,16 @@ async function generateTagPages(portfolioData) {
           console.warn(`Missing responsive images for ${item.path}. Using base image as fallback.`);
         }
 
-        // Generate tags HTML (limit based on estimated line count for consistent heights)
+        // Generate tags HTML (same logic as main cards)
         let tagsHtml = '';
         if (item.tags && item.tags.length > 0) {
-          // Estimate character width per line (adjust based on your card width and font size)
-          const avgCharsPerLine = 30; // Increased for smaller font size
-          const maxLines = 2; // Maximum lines of tags we want
-          const maxChars = avgCharsPerLine * maxLines;
-
-          const displayTags = [];
-          let currentChars = 0;
-
-          for (const tag of item.tags) {
-            const tagLength = tag.name.length + 2; // +2 for spacing/padding
-            if (currentChars + tagLength <= maxChars) {
-              displayTags.push(tag);
-              currentChars += tagLength;
-            } else {
-              break;
-            }
-          }
-
-          // Calculate remaining tags specifically for "more" indicator
-          const moreCount = item.tags.length > displayTags.length ? item.tags.length - displayTags.length : 0;
+          // Sort tags by category order: TagCategory1, TagCategory2, TagCategory3
+          const categoryOrder = { TagCategory1: 1, TagCategory2: 2, TagCategory3: 3 };
+          const orderedTags = item.tags.slice().sort((a, b) => {
+            return (categoryOrder[a.category] || 99) - (categoryOrder[b.category] || 99);
+          });
+          const displayTags = orderedTags.slice(0, 5);
+          const moreCount = orderedTags.length > 5 ? orderedTags.length - 5 : 0;
           const moreIndicator = moreCount > 0 ? `<span class="portfolio-tag portfolio-tag--more">+${moreCount} more</span>` : '';
 
           tagsHtml = `
@@ -1340,8 +1315,8 @@ async function generateTagIndexPage(portfolioData) {
 <html lang="en">
 
 <head>
-    <meta name="description" content="Browse Dan Reis's UX design portfolio by tags and skills including UX Design, Prototyping, User Research, and more." />
-    <title>Portfolio Tags & Skills | Dan Reis</title>
+    <meta name="description" content="Browse {{AUTHOR_NAME}}'s UX design portfolio by tags and skills including UX Design, Prototyping, User Research, and more." />
+    <title>Featured Tags | {{AUTHOR_NAME}}</title>
     <!-- BUILD_INSERT id="head" -->
     <link rel="stylesheet" href="/styles/page-portfolio.css?v={{VERSION}}" />
 </head>
@@ -1352,7 +1327,7 @@ async function generateTagIndexPage(portfolioData) {
         <!-- BUILD_INSERT id="nav" -->
         <!-- Header -->
         <header role="banner">
-            <h1>Portfolio Tags & Skills</h1>
+            <h1>Featured Tags</h1>
         </header>
     </div>
     <!-- MAIN CONTENT -->
@@ -1361,8 +1336,7 @@ async function generateTagIndexPage(portfolioData) {
             <div class="content-wrapper">
                 <!-- SECTION: Company Tags -->
                 <section class="solution">
-                    <h2>Company Tags</h2>
-                    <p>Projects organized by company and client work.</p>
+                    <h2>Company</h2>
                     <ul class="tag-list">
                         ${tagsByCategory.Company.map(tag =>
       `<li><a href="/portfolio/tags/${tag.slug}/">${tag.name}</a> <span class="tag-count">(${tag.count} project${tag.count !== 1 ? 's' : ''})</span></li>`
@@ -1509,25 +1483,29 @@ async function main(buildDir = './build/temp') {
     console.log('\n2.5 🔧 Injecting required feature scripts...');
     await fixHtmlInAllFiles(path.join(buildDir, 'public_html'));
 
-    // Step 3: Inject tags into portfolio pages
-    console.log('\n3. 🏷️ Injecting tags into portfolio pages...');
+    // Step 3: Inject company logos into portfolio pages
+    console.log('\n3. 🏢 Injecting company logos into portfolio pages...');
+    await injectCompanyLogosInAllHtmlFiles(path.join(buildDir, 'public_html'));
+
+    // Step 4: Inject tags into portfolio pages
+    console.log('\n4. 🏷️ Injecting tags into portfolio pages...');
     const taggedFiles = await injectTagsInAllHtmlFiles(portfolioData);
 
-    // Step 4: Generate portfolio index page
-    console.log('\n4. 📄 Generating portfolio index page...');
+    // Step 5: Generate portfolio index page
+    console.log('\n5. 📄 Generating portfolio index page...');
     await generatePortfolioIndexPage(portfolioData);
 
-    // Step 5: Generate tag pages
-    console.log('\n5. 🏷️ Generating tag pages...');
+    // Step 6: Generate tag pages
+    console.log('\n6. 🏷️ Generating tag pages...');
     const tagPagesGenerated = await generateTagPages(portfolioData);
 
-    // Step 6: Generate next-project sections
-    console.log('\n6. ➡️ Generating next-project sections...');
+    // Step 7: Generate next-project sections
+    console.log('\n7. ➡️ Generating next-project sections...');
     const nextProjectMap = createNextProjectMap(portfolioData);
     const nextProjectsGenerated = await generateNextProjectSections(nextProjectMap);
 
-    // Step 7: Generate tag index page
-    console.log('\n7. 🏷️ Generating tag index page...');
+    // Step 8: Generate tag index page
+    console.log('\n8. 🏷️ Generating tag index page...');
     await generateTagIndexPage(portfolioData);
 
     // Summary
@@ -1583,6 +1561,151 @@ function createNextProjectMap(portfolioData) {
   return nextProjectMap;
 }
 
+// === COMPANY LOGO INJECTION LOGIC ===
+
+// Company name mapping for proper display names
+const COMPANY_NAME_MAP = {
+  'mikmak': 'MikMak',
+  'logmein': 'LogMeIn',
+  'dataxu': 'Dataxu'
+};
+
+/**
+ * Extracts company name from portfolio file path
+ * @param {string} filePath - Portfolio file path (e.g., portfolio/mikmak/project/index.html)
+ * @returns {Object|null} - Company info object or null if not found
+ */
+function getCompanyFromPath(filePath) {
+  const companyMatch = filePath.match(/portfolio\/([^\/]+)\//);
+  if (!companyMatch) {
+    return null;
+  }
+
+  const companySlug = companyMatch[1];
+  const companyName = COMPANY_NAME_MAP[companySlug] || companySlug.charAt(0).toUpperCase() + companySlug.slice(1);
+
+  return {
+    slug: companySlug,
+    name: companyName
+  };
+}
+
+/**
+ * Generates company logo HTML with link to company tag page
+ * @param {Object} company - Company info object with slug and name
+ * @returns {string} - HTML for company logo with link
+ */
+function generateCompanyLogoHtml(company) {
+  if (!company) {
+    return '';
+  }
+
+  return `<div class="card--company-logo">
+    <a href="/portfolio/tags/${company.slug}/">
+      <img src="/assets/images/portfolio/company-logo--${company.slug}.svg" alt="${company.name} Company Logo" />
+    </a>
+  </div>`;
+}
+
+/**
+ * Injects company logo into HTML content using BUILD_INSERT placeholder
+ * @param {string} html - HTML content
+ * @param {string} filePath - File path for company detection
+ * @returns {string} - HTML with company logo injected
+ */
+function injectCompanyLogo(html, filePath) {
+  // Check if BUILD_INSERT placeholder exists
+  if (!html.includes('<!-- BUILD_INSERT id="company-logo" -->')) {
+    return html;
+  }
+
+  // Get company info from file path
+  const company = getCompanyFromPath(filePath);
+  if (!company) {
+    console.warn(`Could not extract company from path: ${filePath}`);
+    // Remove the placeholder if we can't determine company
+    return html.replace('<!-- BUILD_INSERT id="company-logo" -->', '');
+  }
+
+  // Check if logo file exists (basic validation)
+  const logoPath = path.join(process.cwd(), 'public_html', 'assets', 'images', 'portfolio', `company-logo--${company.slug}.svg`);
+  if (!fs.existsSync(logoPath)) {
+    console.warn(`Company logo file not found: company-logo--${company.slug}.svg`);
+    // Remove the placeholder if logo doesn't exist
+    return html.replace('<!-- BUILD_INSERT id="company-logo" -->', '');
+  }
+
+  // Generate and inject logo HTML
+  const logoHtml = generateCompanyLogoHtml(company);
+  return html.replace('<!-- BUILD_INSERT id="company-logo" -->', logoHtml);
+}
+
+/**
+ * Helper function to get all HTML files in a directory
+ * @param {string} dir - Directory to search
+ * @returns {Array<string>} Array of HTML file paths
+ */
+async function getAllHtmlFiles(dir) {
+  const exts = ['.html'];
+  const files = [];
+
+  function walk(currentDir) {
+    for (const entry of fs.readdirSync(currentDir)) {
+      const fullPath = path.join(currentDir, entry);
+      if (fs.statSync(fullPath).isDirectory()) {
+        walk(fullPath);
+      } else if (exts.includes(path.extname(fullPath))) {
+        files.push(fullPath);
+      }
+    }
+  }
+
+  walk(dir);
+  return files;
+}
+
+/**
+ * Injects company logos into all portfolio HTML files
+ * @param {string} dir - Build directory path
+ */
+async function injectCompanyLogosInAllHtmlFiles(dir) {
+  console.log('Injecting company logos into portfolio pages...');
+
+  const portfolioDir = path.join(dir, 'portfolio');
+  if (!fs.existsSync(portfolioDir)) {
+    console.warn('Portfolio directory not found, skipping company logo injection');
+    return;
+  }
+
+  let logosInjected = 0;
+
+  // Get all HTML files in portfolio subdirectories
+  const files = await getAllHtmlFiles(portfolioDir);
+
+  for (const file of files) {
+    // Skip tag pages and index files
+    if (file.includes('/tags/') || file.endsWith('portfolio/index.html')) {
+      continue;
+    }
+
+    try {
+      const content = await fs.promises.readFile(file, 'utf8');
+      const relativePath = path.relative(dir, file);
+      const updatedContent = injectCompanyLogo(content, relativePath);
+
+      if (updatedContent !== content) {
+        await fs.promises.writeFile(file, updatedContent, 'utf8');
+        console.log(`  ✓ Company logo injected in ${relativePath}`);
+        logosInjected++;
+      }
+    } catch (error) {
+      console.error(`Error processing ${file}:`, error.message);
+    }
+  }
+
+  console.log(`✓ Company logos injected in ${logosInjected} files`);
+}
+
 // Execute if this script is run directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   const buildDir = process.argv[2] || './build/temp';
@@ -1592,4 +1715,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 }
 
-export { main as default, extractMetadata, generatePortfolioIndexPage, generateTagPages, generateNextProjectSections, transformCarouselsInAllHtmlFiles, injectTagsInAllHtmlFiles };
+export { main as default, extractMetadata, generatePortfolioIndexPage, generateTagPages, generateNextProjectSections, transformCarouselsInAllHtmlFiles, injectTagsInAllHtmlFiles, injectCompanyLogosInAllHtmlFiles };

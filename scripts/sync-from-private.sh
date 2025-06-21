@@ -7,7 +7,7 @@
 set -e
 
 # Configuration
-PRIVATE_REPO="/Users/danielreis/web/danrtzaq/build-system-repo"
+PRIVATE_REPO="/Users/danielreis/web/danrtzaq"
 PUBLIC_REPO="/Users/danielreis/web/portfolio-build"
 SYNC_LOG="$PUBLIC_REPO/sync.log"
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
