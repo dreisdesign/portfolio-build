@@ -7,6 +7,76 @@ All notable changes to the Portfolio Build System will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2025-06-23 - Major Image Pipeline & Build System Improvements
+
+### Added
+- **Automatic Image Dimension Injection** - Revolutionary build pipeline enhancement
+  - Sharp-based automatic width/height attribute injection for all images
+  - Eliminates need for manual dimension attributes in source HTML
+  - Improves layout stability and performance with proper aspect ratios
+  - Seamless integration with existing responsive image workflow
+
+- **Comprehensive Image Pipeline Cleanup**
+  - `cleanup-build-images.sh`: Removes unwanted upscayl variants and duplicate files
+  - Cleans both active build and backup directories to prevent slow deploys
+  - Solves build asset preservation issues that caused 242+ unwanted files
+  - Significant deploy performance improvements
+
+- **Enhanced Utility Scripts Organization**
+  - `batch-upscayl.sh`: Safe batch upscaling workflow with duplicate filename handling
+  - `compress-pngs.js`: Sharp-based PNG compression utility for batch testing
+  - All utility scripts moved to organized `/dev/scripts/utilities/` directory
+
+### Enhanced
+- **Build Pipeline Performance** - Major improvements to build speed and reliability
+  - Automatic image dimension detection and injection using Sharp
+  - Standardized image attributes (loading, fetchpriority, decoding) based on image type
+  - Improved zoomable image logic to always use full-res original files
+  - Enhanced insert-section template for clean, minimal HTML generation
+
+- **Image Processing Workflow** - Complete standardization and optimization
+  - Removed all manual width/height attributes from source HTML files
+  - Eliminated redundant image attributes across all portfolio pages
+  - Updated build scripts to use `audit.mjs --compare` for validation
+  - Improved Sharp-based image processing with better error handling
+
+### Fixed
+- **Layout and Accessibility Consistency** - Perfect alignment across all portfolio pages
+  - Refactored CSS for full-width backgrounds with proper content wrappers
+  - Standardized spacing using rem units for better accessibility
+  - Removed conflicting width rules and simplified container responsibilities
+  - Enhanced responsive behavior across all screen sizes
+
+- **Zoomable Image System** - Cross-browser consistency and sharpness improvements
+  - Fixed zoomable image logic to avoid nested `<picture>` elements
+  - Improved JavaScript for better loading and Safari compatibility
+  - Enhanced image sharpness and resolution handling
+  - Removed all image sharpening from build scripts for cleaner output
+
+- **Build Output Management** - Solved persistent asset preservation issues
+  - Fixed upscayl images being preserved in `swift-assets-backup` directory
+  - Eliminated slow deploy times caused by hundreds of unwanted processed images
+  - Improved build cleanup to prevent accumulation of duplicate files
+  - Enhanced build validation and error reporting
+
+### Technical Improvements
+- **CSS Architecture** - Complete layout system overhaul
+  - Updated `main-layout.css`, `main-responsiveness.css`, `main-utilities.css`
+  - Enhanced `page-home.css` and `feature-zoom.css` for better performance
+  - Improved spacing, accessibility, and cross-browser compatibility
+
+- **Build Scripts** - Enhanced reliability and feature set
+  - Updated image transformation scripts with dimension injection
+  - Improved utility organization and documentation
+  - Enhanced error handling and validation workflows
+  - Better integration between build steps and asset management
+
+### Migration Notes
+- Source HTML files no longer need manual width/height attributes on images
+- Build pipeline automatically injects correct dimensions during processing
+- Utility scripts moved to `/dev/scripts/utilities/` for better organization
+- New cleanup script available for maintaining clean build outputs
+
 ## [1.5.0] - 2025-01-07 - Complete Layout & Cross-Browser Improvements Sync
 
 ### Added
@@ -148,3 +218,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Portfolio tagging and categorization
 - Automated deployment scripts
 - Development server integration
+
+## [2025-06-22-v18] - June 22, 2025
+
+### Fixed
+- **Image Rendering**: Removed global `img` CSS rules from `feature-zoom.css` that were causing aliasing issues on regular (non-zoomable) images, especially on the portfolio index page. Image rendering improvements are now scoped only to zoomable images.
+- **Zoomable Images**: Reverted zoom detection logic in favor of upscaling source images for better zoom quality and simpler code.
+
+### Technical
+- Scoped image-rendering CSS properties to `.zoomable-image` selectors only
+- Simplified zoomable-image.js to mark all `picture img` elements as zoomable by default
+- Maintained all existing zoom functionality and image quality improvements
