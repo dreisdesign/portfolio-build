@@ -95,7 +95,8 @@ const headCommonTemplate = `<!-- Common head elements for all pages -->
 // Additional script for portfolio pages
 const portfolioScriptsTemplate = `
   <!-- Portfolio-specific scripts -->
-  <script defer src="/js/video-wrapper.js?v={{VERSION}}"></script>`;
+  <script defer src="/js/video-wrapper.js?v={{VERSION}}"></script>
+  <script defer src="/js/zoomable-image.js?v={{VERSION}}"></script>`;
 
 // Replace version placeholder in templates
 const headCommonContent = headCommonTemplate.replace(/{{VERSION}}/g, machineTimestamp);
